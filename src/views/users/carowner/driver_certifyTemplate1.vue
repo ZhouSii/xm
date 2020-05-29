@@ -1,0 +1,2060 @@
+<template>
+  <div class="StyleNewinfoComponent shippercreatDialog commoncss driverDialog">
+    <el-button
+      :type="btntype"
+      :value="value"
+      :plain="plain"
+      :icon="icon"
+      @click="openDialog()"
+      size="mini"
+    >
+      <span>{{btntext}}</span>
+    </el-button>
+    <el-dialog
+      :title="btntitle"
+      :visible="driverTemplateDialogFlag"
+      top="5vh"
+      :before-close="change"
+      modal-append-to-body
+      v-dialogDrag
+      :closeOnClickModal="false"
+    >
+      <div>
+        <el-form ref="templateModel" :model="templateModel" :rules="rulesForm">
+          <!-- 身份信息 -->
+          <el-row>
+            <h2 class="carNewinfoH2">身份信息</h2>
+            <el-col :span="8">
+              <el-form-item label="用户姓名：" :label-width="formLabelWidth" prop="driverName">
+                <el-input auto-complete="off" v-model="templateModel.driverName" :maxlength="20"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="手机号码：" :label-width="formLabelWidth" prop="driverMobile">
+                <el-input auto-complete="off" v-model="templateModel.driverMobile" :maxlength="11"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="身份证号码：" :label-width="formLabelWidth" prop="cardid">
+                <el-input auto-complete="off" v-model="templateModel.cardid" :maxlength="18"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="性别：" :label-width="formLabelWidth" prop="sex">
+                <el-select v-model="templateModel.sex" placeholder="请选择">
+                  <el-option
+                    v-for="item in sexList"
+                    :key="item.value"
+                    :label="item.name"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="年龄：" :label-width="formLabelWidth" prop="age">
+                <el-input auto-complete="off" v-model="templateModel.age" :maxlength="3"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="生日：" :label-width="formLabelWidth" prop="birthday">
+                <el-date-picker v-model="templateModel.birthday" type="date" placeholder="选择日期"></el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="认证所在地：" :label-width="formLabelWidth" prop="belongCityName">
+                <vregion :ui="true" @values="regionChange" class="form-control" ref="belongCity">
+                  <el-input v-model="templateModel.belongCityName" placeholder="请选择"></el-input>
+                </vregion>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="民族：" :label-width="formLabelWidth">
+                <el-input auto-complete="off" v-model="templateModel.nation" :maxlength="10"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="活跃值：" :label-width="formLabelWidth">
+                <el-select
+                  v-model="templateModel.activeValue"
+                  placeholder="请选择"
+                  :disabled="editType=='view'"
+                >
+                  <el-option
+                    v-for="item in activeValueList"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="注册所在地：" :label-width="formLabelWidth" prop="regisAddress">
+                <vregion
+                  :ui="true"
+                  @values="regisaddressChange"
+                  class="form-control"
+                  ref="regisAddress"
+                >
+                  <el-input v-model="templateModel.regisAddress" placeholder="请选择"></el-input>
+                </vregion>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="住址：" :label-width="formLabelWidth">
+                <el-input auto-complete="off" v-model="templateModel.address"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item
+                label="最后登录时间："
+                :label-width="formLabelWidth"
+              >{{templateModel.loginTime|parseTime}}</el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="账户登录状态：" :label-width="formLabelWidth">
+                <el-button
+                  type="primary"
+                  icon="el-icon-circle-check-outline"
+                  :size="UseBtntype"
+                  @click="isOnLine(0)"
+                  v-if="templateModel.isOnLine=='1'"
+                >是</el-button>
+                <el-button
+                  type="info"
+                  icon="el-icon-circle-close-outline"
+                  :size="UseBtntype"
+                  @click="isOnLine(1)"
+                  v-else
+                >否</el-button>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="是否临时认证：" :label-width="formLabelWidth">
+                <el-button
+                  type="primary"
+                  icon="el-icon-circle-check-outline"
+                  :size="UseBtntype"
+                  @click="isTempCertificate(0)"
+                  v-if="templateModel.isTempCertificate=='1'"
+                  :disabled="editType=='view'"
+                >是</el-button>
+                <el-button
+                  type="info"
+                  icon="el-icon-circle-close-outline"
+                  :size="UseBtntype"
+                  @click="isTempCertificate(1)"
+                  v-else
+                  :disabled="editType=='view'"
+                >否</el-button>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="是否业务员：" :label-width="formLabelWidth">
+                <el-button
+                  type="primary"
+                  icon="el-icon-circle-check-outline"
+                  :size="UseBtntype"
+                  @click="isCompanySale(0)"
+                  v-if="templateModel.isCompanySale=='1'"
+                  :disabled="editType=='view'"
+                >是</el-button>
+                <el-button
+                  type="info"
+                  icon="el-icon-circle-close-outline"
+                  :size="UseBtntype"
+                  @click="isCompanySale(1)"
+                  v-else
+                  :disabled="editType=='view'"
+                >否</el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item
+                label="认证状态："
+                :label-width="formLabelWidth"
+              >{{templateModel.driverStatusName}}</el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item
+                label="注册日期："
+                :label-width="formLabelWidth"
+              >{{templateModel.registerTime|parseTime}}</el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item
+                label="注册渠道："
+                :label-width="formLabelWidth"
+              >{{templateModel.registerOriginName}}</el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item
+                label="提交认证时间："
+                :label-width="formLabelWidth"
+              >{{templateModel.authenticationTime|parseTime}}</el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item
+                label="等待时长："
+                :label-width="formLabelWidth"
+              >{{templateModel.authenticationTime|remainData}}</el-form-item>
+            </el-col>
+
+            <el-col :span="8" v-if="editType!== 'add'">
+              <el-form-item
+                label="首次认证通过时间："
+                :label-width="formLabelWidth"
+              >{{templateModel.firstAuthPassTime|parseTime}}</el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="8" class="CheckPass">
+              <el-form-item prop="idCardFile" label-width="0">
+                <div class="uploadPicture">
+                  <h3 class="uploadH3">
+                    车主身份证照片
+                    <el-button
+                      type="primary"
+                      class="showPictureBtn"
+                      plain
+                      v-if="editType != 'view' && templateModel.idCardFile"
+                      @click="showCurrenPic('idCardFile')"
+                    >查看</el-button>
+                  </h3>
+                  <div class="upload_True">
+                    <upload
+                      class="licensePicture"
+                      tip="（必须为jpg/png并且小于5M）"
+                      v-model="templateModel.idCardFile"
+                      uploadType="idCardFile"
+                      @getInformation="IdCardInmation"
+                    />
+                  </div>
+                </div>
+              </el-form-item>
+              <el-form-item prop label="图片审核状态：">
+                <el-select v-model="radio6" placeholder="请选择" class="radioselect">
+                  <el-option
+                    v-for="item in caroptions"
+                    :key="item.value"
+                    :label="item.value"
+                    :value="item.label"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="8" class="CheckPass">
+              <el-form-item prop="personalImageFile" label-width="0">
+                <div class="uploadPicture">
+                  <h3 class="uploadH3">
+                    车主个人形象照
+                    <el-button
+                      type="primary"
+                      class="showPictureBtn"
+                      plain
+                      v-if="editType != 'view' && templateModel.personalImageFile"
+                      @click="showCurrenPic('personalImageFile')"
+                    >查看</el-button>
+                  </h3>
+                  <div class="upload_True">
+                    <upload
+                      class="licensePicture"
+                      tip="（必须为jpg/png并且小于5M）"
+                      v-model="templateModel.personalImageFile"
+                      pictureStatus="true"
+                    />
+                  </div>
+                </div>
+              </el-form-item>
+              <el-form-item prop label="图片审核状态：">
+                <el-select v-model="radio7" placeholder="请选择" class="radioselect">
+                  <el-option
+                    v-for="item in caroptions"
+                    :key="item.value"
+                    :label="item.value"
+                    :value="item.label"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <!-- 驾驶证信息 -->
+          <el-row>
+            <h2 class="carNewinfoH2">驾驶证信息</h2>
+            <el-col :span="8">
+              <el-form-item label="档案编号：" :label-width="formLabelWidth" prop="fileNumberLicense">
+                <el-input auto-complete="off" v-model="templateModel.fileNumberLicense"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="国籍：" :label-width="formLabelWidth">
+                <el-input auto-complete="off" v-model="templateModel.nationality"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="准驾车型：" :label-width="formLabelWidth">
+                <el-input auto-complete="off" v-model="templateModel.classType"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="驾驶证有效期起：" :label-width="formLabelWidth">
+                <el-date-picker
+                  v-model="templateModel.vldStartLicence"
+                  type="date"
+                  placeholder="选择日期"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="驾驶证有效期止：" :label-width="formLabelWidth">
+                <el-date-picker
+                  v-model="templateModel.vldEndLicence"
+                  type="date"
+                  placeholder="选择日期"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item
+                label="是否过期："
+                :label-width="formLabelWidth"
+              >{{templateModel.vldEndLicenceExpire}}</el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="初次领证日期：" :label-width="formLabelWidth">
+                <el-date-picker
+                  v-model="templateModel.firstTimeLicense"
+                  type="date"
+                  placeholder="选择日期"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="驾驶证签发机关：" :label-width="formLabelWidth">
+                <el-input auto-complete="off" v-model="templateModel.signOrgLicense"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="8" class="CheckPass">
+              <el-form-item prop="drivingLicenceFile">
+                <div class="uploadPicture">
+                  <h3 class="uploadH3">
+                    驾驶证正页
+                    <el-button
+                      type="primary"
+                      class="showPictureBtn"
+                      plain
+                      v-if="editType != 'view' && templateModel.drivingLicenceFile"
+                      @click="showCurrenPic('drivingLicenceFile')"
+                    >查看</el-button>
+                  </h3>
+                  <div class="upload_True">
+                    <upload
+                      class="licensePicture"
+                      tip="（必须为jpg/png并且小于5M）"
+                      v-model="templateModel.drivingLicenceFile"
+                      uploadType="drivingLicenceFile"
+                      @getInformation="drivingLicenceFileInmation"
+                    />
+                  </div>
+                </div>
+              </el-form-item>
+              <el-form-item prop label="图片审核状态：">
+                <el-select v-model="radio1" placeholder="请选择" class="radioselect">
+                  <el-option
+                    v-for="item in caroptions"
+                    :key="item.value"
+                    :label="item.value"
+                    :value="item.label"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8" class="CheckPass">
+              <el-form-item prop="drivingLicenceFileOpposite">
+                <div class="uploadPicture">
+                  <h3 class="uploadH3">
+                    驾驶证副本
+                    <el-button
+                      type="primary"
+                      class="showPictureBtn"
+                      plain
+                      v-if="editType != 'view' && templateModel.drivingLicenceFileOpposite"
+                      @click="showCurrenPic('drivingLicenceFileOpposite')"
+                    >查看</el-button>
+                  </h3>
+                  <div class="upload_True">
+                    <upload
+                      class="licensePicture"
+                      tip="（必须为jpg/png并且小于5M）"
+                      v-model="templateModel.drivingLicenceFileOpposite"
+                    />
+                  </div>
+                </div>
+              </el-form-item>
+              <el-form-item prop label="图片审核状态：">
+                <el-select v-model="radio2" placeholder="请选择" class="radioselect">
+                  <el-option
+                    v-for="item in caroptions"
+                    :key="item.value"
+                    :label="item.value"
+                    :value="item.label"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <!-- 行驶证信息 -->
+          <el-row>
+            <h2 class="carNewinfoH2">行驶证信息</h2>
+          </el-row>
+          <el-row>
+            <el-table
+              :data="templateModel.driverPermitList"
+              border
+              row-key="id"
+              :expand-row-keys="expands"
+              @row-click="rowClick"
+              style="width: 100%"
+            >
+              <el-table-column type="expand">
+                <template slot-scope="props">
+                  <el-row>
+                    <el-col :span="8">
+                      <el-form-item
+                        label="车牌号："
+                        :label-width="formLabelWidth"
+                        v-if="props.$index==0"
+                        :prop="'driverPermitList[' + props.$index + '].carNumber'"
+                        :rules="{required:true,validator:(rule, value, callback)=>{
+          return carNumberValidator(rule, value, callback)
+          }, trigger: 'change'}"
+                      >
+                        <el-input auto-complete="off" v-model="props.row.carNumber"></el-input>
+                      </el-form-item>
+                      <el-form-item label="车牌号：" :label-width="formLabelWidth" v-else>
+                        <el-input auto-complete="off" v-model="props.row.carNumber" disabled></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item
+                        label="所有人："
+                        :label-width="formLabelWidth"
+                        :prop="props.$index==0?'driverPermitList[' + props.$index + '].owner':''"
+                        :rules="{required:props.$index==0,message:'所有人不能为空',trigger:'change'}"
+                      >
+                        <el-input
+                          auto-complete="off"
+                          v-model="props.row.owner"
+                          :disabled="props.$index!==0"
+                        ></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="使用性质：" :label-width="formLabelWidth">
+                        <el-input
+                          auto-complete="off"
+                          v-model="props.row.useType"
+                          :disabled="props.$index!==0"
+                        ></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="8">
+                      <el-form-item label="品牌型号：" :label-width="formLabelWidth">
+                        <el-input
+                          auto-complete="off"
+                          v-model="props.row.brandType"
+                          :disabled="props.$index!==0"
+                        ></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="车辆识别代号：" :label-width="formLabelWidth">
+                        <el-input
+                          auto-complete="off"
+                          v-model="props.row.vin"
+                          :disabled="props.$index!==0"
+                        ></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="发动机号：" :label-width="formLabelWidth">
+                        <el-input
+                          auto-complete="off"
+                          v-model="props.row.engineNo"
+                          :disabled="props.$index!==0"
+                        ></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="8">
+                      <el-form-item label="行驶证注册日期：" :label-width="formLabelWidth">
+                        <el-date-picker
+                          v-model="props.row.registerDate"
+                          type="date"
+                          placeholder="选择日期"
+                          :disabled="props.$index!==0"
+                        ></el-date-picker>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="行驶证发证日期：" :label-width="formLabelWidth">
+                        <el-date-picker
+                          v-model="props.row.issueDate"
+                          type="date"
+                          placeholder="选择日期"
+                          :disabled="props.$index!==0"
+                        ></el-date-picker>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="行驶证档案编号：" :label-width="formLabelWidth">
+                        <el-input
+                          auto-complete="off"
+                          v-model="props.row.fileNumber"
+                          :disabled="props.$index!==0"
+                        ></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                  <el-row>
+                    <el-col :span="8">
+                      <el-form-item
+                        label="车辆类型："
+                        :label-width="formLabelWidth"
+                        :prop="props.$index==0?'driverPermitList[' + props.$index + '].carType':''"
+                        :rules="{required:props.$index==0,message:'车辆类型不能为空',trigger:'change'}"
+                      >
+                        <el-select
+                          v-model="props.row.carType"
+                          placeholder="请选择"
+                          :disabled="props.$index!==0"
+                        >
+                          <el-option
+                            v-for="item in carTypeList"
+                            :key="item.code"
+                            :label="item.name"
+                            :value="item.code"
+                          ></el-option>
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-form-item label="车辆规格：" :label-width="formLabelWidth">
+                        <el-select
+                          v-model="props.row.carSpec"
+                          placeholder="请选择"
+                          :disabled="props.$index!==0"
+                        >
+                          <el-option
+                            v-for="item in carSpecList"
+                            :key="item.code"
+                            :label="item.name"
+                            :value="item.code"
+                          ></el-option>
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8" class="lessWidth_col">
+                      <div v-if="props.$index==0">
+                        <el-form-item
+                          label="车长(米)："
+                          :prop="'driverPermitList[' + props.$index + '].carLength'"
+                          :rules="{required:true,validator:(rule, value, callback)=>{
+          return carBreadth(rule, value, callback)
+          }, trigger: 'change'}"
+                          :label-width="formLabelWidth"
+                        >
+                          <el-input
+                            class="lessWidth"
+                            placeholder="长"
+                            v-model="props.row.carLength"
+                            clearable
+                            ref="lengths"
+                            :maxlength="5"
+                          ></el-input>
+                        </el-form-item>
+                        <el-form-item
+                          :prop="'driverPermitList[' + props.$index + '].carWidth'"
+                          :rules="{required:true,validator:(rule, value, callback)=>{
+          return carBreadth(rule, value, callback)
+          }, trigger: 'change'}"
+                        >
+                          <el-input
+                            class="lessWidth"
+                            placeholder="宽"
+                            v-model="props.row.carWidth"
+                            clearable
+                            ref="widths"
+                            :maxlength="5"
+                          ></el-input>
+                        </el-form-item>
+                        <el-form-item
+                          :prop="'driverPermitList[' + props.$index + '].carHeight'"
+                          :rules="{required:true,validator:(rule, value, callback)=>{
+          return carBreadth(rule, value, callback)
+          }, trigger: 'change'}"
+                        >
+                          <el-input
+                            class="lessWidth"
+                            placeholder="高"
+                            v-model="props.row.carHeight"
+                            clearable
+                            ref="heights"
+                            :maxlength="5"
+                          ></el-input>
+                        </el-form-item>
+                      </div>
+                      <div v-else>
+                        <el-form-item label="车长(米)：" :label-width="formLabelWidth">
+                          <el-input
+                            class="lessWidth"
+                            placeholder="长"
+                            v-model="props.row.carLength"
+                            clearable
+                            disabled
+                          ></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                          <el-input
+                            class="lessWidth"
+                            placeholder="宽"
+                            v-model="props.row.carWidth"
+                            clearable
+                            disabled
+                          ></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                          <el-input
+                            class="lessWidth"
+                            placeholder="高"
+                            v-model="props.row.carHeight"
+                            clearable
+                            disabled
+                          ></el-input>
+                        </el-form-item>
+                      </div>
+                    </el-col>
+                  </el-row>
+                  <el-row :gutter="20">
+                    <el-col :span="8" class="CheckPass">
+                      <el-form-item
+                        :prop="props.$index==0?'driverPermitList[' + props.$index + '].drivingPermitFile':''"
+                        :rules="{required:props.$index==0,message:'车辆行驶证需要上传',trigger:'change'}"
+                      >
+                        <div class="uploadPicture">
+                          <h3 class="uploadH3">
+                            车辆行驶证
+                            <el-button
+                              type="primary"
+                              class="showPictureBtn"
+                              plain
+                              v-if="editType != 'view' && props.row.drivingPermitFile"
+                              @click="showCurrenPic('drivingPermitFile',props.$index)"
+                            >查看</el-button>
+                          </h3>
+                          <div class="upload_True">
+                            <upload
+                              class="licensePicture"
+                              tip="（必须为jpg/png并且小于5M）"
+                              v-model="props.row.drivingPermitFile"
+                              uploadType="drivingPermitFile"
+                              @getInformation="drivingPermitFileInmation"
+                              v-if="props.$index==0"
+                            />
+                            <img
+                              :src="props.row.drivingPermitFile ? props.row.drivingPermitFile : defaultImg"
+                              v-else
+                              style="width:100%;height:218px"
+                            />
+                          </div>
+                        </div>
+                      </el-form-item>
+                      <el-form-item prop label="图片审核状态：" style="margin-top:12px">
+                        <el-select
+                          v-model="radio3"
+                          placeholder="请选择"
+                          class="radioselect"
+                          :disabled="props.$index!==0"
+                        >
+                          <el-option
+                            v-for="item in caroptions"
+                            :key="item.value"
+                            :label="item.value"
+                            :value="item.label"
+                          ></el-option>
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8" class="CheckPass">
+                      <el-form-item
+                        :prop="props.$index==0?'driverPermitList[' + props.$index + '].drivingPermitFileOpposite':''"
+                        :rules="{required:props.$index==0,message:'车辆行驶证副本需要上传',trigger:'change'}"
+                      >
+                        <div class="uploadPicture">
+                          <h3 class="uploadH3">
+                            车辆行驶证副本
+                            <el-button
+                              type="primary"
+                              class="showPictureBtn"
+                              plain
+                              v-if="editType != 'view' && props.row.drivingPermitFileOpposite"
+                              @click="showCurrenPic('drivingPermitFileOpposite',props.$index)"
+                            >查看</el-button>
+                          </h3>
+                          <div class="upload_True">
+                            <upload
+                              class="licensePicture"
+                              tip="（必须为jpg/png并且小于5M）"
+                              v-model="props.row.drivingPermitFileOpposite"
+                              v-if="props.$index==0"
+                            />
+                            <img
+                              :src="props.row.drivingPermitFileOpposite ? props.row.drivingPermitFileOpposite : defaultImg"
+                              v-else
+                              style="width:100%;height:218px"
+                            />
+                          </div>
+                        </div>
+                      </el-form-item>
+                      <el-form-item prop label="图片审核状态：" style="margin-top:12px">
+                        <el-select
+                          v-model="radio4"
+                          placeholder="请选择"
+                          class="radioselect"
+                          :disabled="props.$index!==0"
+                        >
+                          <el-option
+                            v-for="item in caroptions"
+                            :key="item.value"
+                            :label="item.value"
+                            :value="item.label"
+                          ></el-option>
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="8" class="CheckPass">
+                      <el-form-item
+                        :prop="props.$index==0?'driverPermitList[' + props.$index + '].carFile':''"
+                        :rules="{required:props.$index==0,message:'车辆45°照片需要上传',trigger:'change'}"
+                      >
+                        <div class="uploadPicture">
+                          <h3 class="uploadH3">
+                            车辆45°照片
+                            <el-button
+                              type="primary"
+                              class="showPictureBtn"
+                              plain
+                              v-if="editType != 'view' && props.row.carFile"
+                              @click="showCurrenPic('carFile',props.$index)"
+                            >查看</el-button>
+                          </h3>
+                          <div class="upload_True">
+                            <upload
+                              class="licensePicture"
+                              tip="（必须为jpg/png并且小于5M）"
+                              v-model="props.row.carFile"
+                              v-if="props.$index==0"
+                            />
+                            <img
+                              :src="props.row.carFile ? props.row.carFile : defaultImg"
+                              v-else
+                              style="width:100%;height:218px"
+                            />
+                          </div>
+                        </div>
+                      </el-form-item>
+                      <el-form-item prop label="图片审核状态：" style="margin-top:12px">
+                        <el-select
+                          v-model="radio5"
+                          placeholder="请选择"
+                          class="radioselect"
+                          :disabled="props.$index!==0"
+                        >
+                          <el-option
+                            v-for="item in caroptions"
+                            :key="item.value"
+                            :label="item.value"
+                            :value="item.label"
+                          ></el-option>
+                        </el-select>
+                      </el-form-item>
+                    </el-col>
+                  </el-row>
+                </template>
+              </el-table-column>
+              <el-table-column type="index" label="序号" width="80"></el-table-column>
+              <el-table-column prop="createTime" label="申请时间">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.createTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="auditTime" label="审核时间">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.auditTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="auditor" label="操作人"></el-table-column>
+            </el-table>
+          </el-row>
+
+          <!-- 业务信息 -->
+          <el-row style="margin-bottom:22px;">
+            <h2 class="carNewinfoH2">
+              内部权益管理
+              <p class="aflcBusinessBtn">
+                <el-button
+                  type="primary"
+                  size="medium"
+                  plain
+                  v-if="editType != 'view' && !chooseType"
+                  @click="handleClick('addItem')"
+                >新增权益</el-button>
+                <el-button
+                  type="primary"
+                  size="medium"
+                  plain
+                  v-if="editType != 'view' && chooseType"
+                  @click="handleClick('conserve')"
+                >保存</el-button>
+                <el-button
+                  type="primary"
+                  size="medium"
+                  plain
+                  v-if="editType != 'view' && chooseType"
+                  @click="handleClick('cancel')"
+                >取消</el-button>
+              </p>
+            </h2>
+            <el-table
+              :data="templateModel.aflcBusinessInformationList"
+              border
+              ref="multipleTable"
+              stripe
+              align="center"
+              tooltip-effect="dark"
+              style="width: 100%;min-height:0px"
+            >
+              <el-table-column prop="userStatusName" label="权益类型">
+                <template slot-scope="scope">
+                  <span v-if="!scope.row.flag">{{ scope.row.userStatusName }}</span>
+                  <div v-else>
+                    <el-select
+                      v-model="scope.row.userStatus"
+                      placeholder="请选择"
+                      @change="complateName(scope.row.userStatus,scope.$index)"
+                    >
+                      <el-option
+                        v-for="item in optionsBusinessInterests"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.code"
+                        :disabled="item.disabled"
+                      ></el-option>
+                    </el-select>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="所属组">
+                <template slot-scope="scope">
+                  <span v-if="!scope.row.flag">{{ scope.row.groupName }}</span>
+                  <div v-else>
+                    <businessGroup
+                      @inputObject="getObject(scope.$index,$event)"
+                      v-model="scope.row.groupName"
+                      ref="businessGroup"
+                    />
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="所属人">
+                <template slot-scope="scope">
+                  <span v-if="!scope.row.flag">{{ scope.row.belongSalesmanName }}</span>
+                  <div v-else>
+                    <selectBelong
+                      :groupCode="scope.row.groupCode"
+                      :belongSalesman="scope.row.belongSalesmanMobile"
+                      @returnBelong="(value)=>{getReturnBelong(value,scope.$index)}"
+                    />
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="updateTime" label="操作时间">
+                <template slot-scope="scope">{{scope.row.updateTime}}</template>
+              </el-table-column>
+              <el-table-column prop="updater" label="操作人"></el-table-column>
+              <el-table-column label="操作" width="100">
+                <template slot-scope="scope">
+                  <el-button
+                    size="medium"
+                    type="warning"
+                    :disabled="scope.row.id ? true : false"
+                    plain
+                    @click="handleClick('delet',scope.$index)"
+                  >删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="车主奖励等级：" prop="rewardgrade" :label-width="formLabelWidth">
+                <el-select
+                  v-model="templateModel.rewardgrade"
+                  placeholder="请选择"
+                  :disabled="editType=='view'"
+                >
+                  <el-option
+                    v-for="item in carOwnerType"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="中单等级：" :label-width="formLabelWidth">
+                <el-select
+                  v-model="templateModel.obtainGrade"
+                  placeholder="请选择"
+                  :disabled="editType=='view'"
+                >
+                  <el-option
+                    v-for="item in optionsLevel"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="中单等级有效期至：" :label-width="formLabelWidth">
+                <el-date-picker
+                  v-model="templateModel.obtainGradeTime"
+                  type="date"
+                  format="yyyy-MM-dd"
+                  placeholder="选择日期"
+                  :picker-options="pickerOptions"
+                  :disabled="editType=='view'"
+                  :default-value="timeDefaultShow"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="推荐人：" :label-width="formLabelWidth">
+                {{templateModel.recommenderName}}
+                <span
+                  v-if="templateModel.recommenderName&&templateModel.recommenderPhone"
+                >-</span>
+                {{templateModel.recommenderPhone}}
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item
+                label="推荐人用户类型："
+                :label-width="formLabelWidth"
+              >{{templateModel.recommenderUserTypeCode}}</el-form-item>
+            </el-col>
+          </el-row>
+          <el-col :span="8">
+            <el-form-item
+              label="推荐渠道："
+              :label-width="formLabelWidth"
+            >{{templateModel.recommendedChannelName}}</el-form-item>
+          </el-col>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item
+                label="推荐人所属业务员："
+                :label-width="formLabelWidth"
+              >{{templateModel.recommenderSalesmanName}}</el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item
+                label="被推荐人注册时间："
+                :label-width="formLabelWidth"
+              >{{templateModel.recommendederRegisterTime|parseTime}}</el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="是否特权车：" :label-width="formLabelWidth">
+                <el-button
+                  type="primary"
+                  icon="el-icon-circle-check-outline"
+                  :size="UseBtntype"
+                  @click="isVipCar(0)"
+                  v-if="templateModel.isVipCar=='1'"
+                >是</el-button>
+                <el-button
+                  type="info"
+                  icon="el-icon-circle-close-outline"
+                  :size="UseBtntype"
+                  @click="isVipCar(1)"
+                  v-else
+                >否</el-button>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="需要后续跟进状态：" :label-width="formLabelWidth">
+                <el-button
+                  type="primary"
+                  icon="el-icon-circle-check-outline"
+                  :size="UseBtntype"
+                  @click="driverFollowUp(0)"
+                  v-if="templateModel.driverFollowUp=='1'"
+                >是</el-button>
+                <el-button
+                  type="info"
+                  icon="el-icon-circle-close-outline"
+                  :size="UseBtntype"
+                  @click="driverFollowUp(1)"
+                  v-else
+                >否</el-button>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="是否广告车：" :label-width="formLabelWidth">
+                <el-button
+                  type="primary"
+                  icon="el-icon-circle-check-outline"
+                  :size="UseBtntype"
+                  @click="isAd(0)"
+                  v-if="templateModel.isAd=='1'"
+                  disabled
+                >是</el-button>
+                <el-button
+                  type="info"
+                  icon="el-icon-circle-close-outline"
+                  :size="UseBtntype"
+                  @click="isAd(1)"
+                  v-else
+                  disabled
+                >否</el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-row>
+              <el-col :span="8">
+                <el-form-item label="广告车有效期：" :label-width="formLabelWidth">
+                  <el-date-picker
+                    v-model="templateModel.adVaild"
+                    type="date"
+                    value-format="timestamp"
+                    placeholder="选择日期"
+                    disabled
+                  ></el-date-picker>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-col :span="24">
+              <el-form-item label="审核备注：" :label-width="formLabelWidth" class="remarkformlabel">
+                <el-input
+                  type="textarea"
+                  placeholder="少于100字符"
+                  :autosize="{ minRows: 2, maxRows: 4}"
+                  clearable
+                  maxlength="100"
+                  v-model="templateModel.businessGroupRemark"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <!-- 权益信息 -->
+          <el-row>
+            <h2 class="carNewinfoH2">权益信息</h2>
+            <el-col :span="24">
+              <el-form-item>
+                <el-button
+                  type="primary"
+                  plain
+                  v-showPicture
+                  :imgurl="templateModel.qrUrl ? templateModel.qrUrl : defaultImg"
+                >二维码接单地址</el-button>
+                <el-button
+                  type="primary"
+                  plain
+                  v-showPicture
+                  :imgurl="templateModel.shipperQrUrl ? templateModel.shipperQrUrl : defaultImg"
+                >查看货主邀请码</el-button>
+                <el-button
+                  type="primary"
+                  plain
+                  v-showPicture
+                  :imgurl="templateModel.driverQrUrl ? templateModel.driverQrUrl : defaultImg"
+                >查看车主邀请码</el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="会员等级：" :label-width="formLabelWidth">
+                <span>无</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="会员等级有效期：" :label-width="formLabelWidth">
+                <span>无</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-table style="width: 100%;min-height:0px">
+              <el-table-column prop label="中单等级"></el-table-column>
+              <el-table-column prop label="奖励等级"></el-table-column>
+              <el-table-column prop label="抽佣等级"></el-table-column>
+              <el-table-column prop label="提现等级"></el-table-column>
+            </el-table>
+          </el-row>
+        </el-form>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" plain @click="handlerPass">{{btntitle=='车辆审核'?'车辆认证通过':'确认审核通过'}}</el-button>
+        <el-button type="primary" plain @click="handlerOut">{{btntitle=='车辆审核'?'认证不通过':'审核不通过'}}</el-button>
+        <el-button type="primary" plain @click="change">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <transition name="el-zoom-in-top">
+      <div class="PopupPic" v-el-drag-dialog v-show="showPopupPic">
+        <div class="el-dialog">
+          <div style="height:700px;">
+            <div class="el-dialog__header">
+              <i class="el-icon-close" @click="closePopPic"></i>
+            </div>
+            <div class="showPictureBox">
+              <div class="PopupPicImg" v-viewer="{fullscreen: false,inline:true,navbar:false}">
+                <img :src="signImages ? signImages : defaultImg" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+  </div>
+</template>
+
+<script>
+import {
+  data_get_driverName_id,
+  data_post_audit,
+  data_post_checkDriverCarNumber
+} from "@/api/users/carowner/all_car.js";
+import vregion from "@/components/vregion/Region";
+import { getDictionary } from "@/api/common.js";
+import businessGroup from "@/components/selectTree/businessGroup";
+import { parseTime, pickerOptions2 } from "@/utils/index.js";
+import { DicBusinessInterests } from "@/api/common.js";
+import selectBelong from "../shipper/selectBelong";
+import Upload from "@/components/Upload/CarSinglemage";
+export default {
+  name: "template-create-view-change",
+  props: {
+    templateItem: {
+      type: [Object, Array]
+    },
+    params: {
+      type: [Object, Array]
+    },
+    value: {
+      type: String,
+      default: ""
+    },
+    btntype: {
+      type: String,
+      default: ""
+    },
+    btntext: {
+      type: String,
+      default: ""
+    },
+    btntitle: {
+      type: String,
+      default: ""
+    },
+    icon: {
+      type: String,
+      default: ""
+    },
+    plain: {
+      type: Boolean,
+      default: false
+    },
+    /*add新增，edit编辑，view查看*/
+    editType: {
+      type: String,
+      default: ""
+    },
+    count: {
+      //数组长度
+      type: Number
+    },
+    isclick: {
+      type: Boolean,
+      default: false
+    }
+  },
+  components: {
+    vregion,
+    businessGroup,
+    selectBelong,
+    Upload
+  },
+  data() {
+    // 手机号校验
+    const mobileValidator = (rule, val, cb) => {
+      let phoneTest = /(^1[1|2|3|4|5|6|7|8|9]\d{9}$)|(^09\d{8}$)/;
+      !val && cb(new Error("手机号码不能为空"));
+      if (!phoneTest.test(val)) {
+        cb(new Error("请输入正确的手机号码格式"));
+      } else {
+        cb();
+      }
+    };
+
+    //    身份证信息校验
+    const cardidValidator = (rule, val, cb) => {
+      var _this = this;
+      let IdTest = /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/;
+      if (!val) {
+        new Error("身份证不能为空");
+      } else if (!IdTest.test(val)) {
+        cb(new Error("请输入正确的身份证"));
+      } else {
+        cb();
+      }
+    };
+
+    //    车牌号信息校验
+    // const carNumberValidator = (rule, val, cb) => {
+    //   var _this = this;
+    //   this.DriverCarNumFrom.carNumber = val;
+    //   if (!val) {
+    //     cb(new Error("车牌号不能为空"));
+    //   } else {
+    //     data_post_checkDriverCarNumber(_this.DriverCarNumFrom)
+    //       .then(res => {
+    //         cb();
+    //       })
+    //       .catch(err => {
+    //         cb(new Error("该车牌号已经注册~"));
+    //       });
+    //   }
+    // };
+
+    // 车长宽高校验
+    // const carBreadth = (rule, val, cb) => {
+    //   var reg = /^[0-9]+(.[0-9]{1,2})?$/;
+    //   if (!val) {
+    //     cb(new Error("不能为空"));
+    //   } else if (!reg.test(val)) {
+    //     cb(new Error("保留2位小数"));
+    //   } else {
+    //     cb();
+    //   }
+    // };
+    return {
+      formLabelWidth: "135px",
+      pickerOptions: {
+        shortcuts: pickerOptions2
+      },
+      UseBtntype: "medium",
+      driverTemplateDialogFlag: false,
+      defaultImg: "/static/test.jpg", //默认第一张图片的url
+      selectFlag: false,
+      expands: [],
+      caroptions: [
+        { value: "上传合格", label: "" },
+        { value: "不清晰", label: "不清晰" },
+        { value: "内容不符", label: "内容不符" }
+      ], //图片审核状态
+      sexList: [
+        { value: "1", name: "男" },
+        { value: "0", name: "女" }
+      ], //性别
+      activeValueList: [], //活跃度
+      carTypeList: [], //车辆类型
+      carSpecList: [], //车辆规格
+      carOwnerType: [], //奖励金等级
+      optionsLevel: [], //中单等级
+      timeDefaultShow: new Date().setFullYear(new Date().getFullYear() + 1),
+      templateModel: {
+        driverName: null,
+        isOnLine: "0",
+        isVipCar: "0",
+        driverFollowUp: "0",
+        isTempCertificate: "0",
+        isCompanySale: "0",
+        isAd: "0",
+        driverMobile: null,
+        sex: null,
+        age: null,
+        cardid: null,
+        birthday: null,
+        belongCityName: null,
+        regisAddress: null,
+        activeValue: "AF0020405",
+        aflcBusinessInformationList: [],
+        rewardgrade: null,
+        driverPermitList: [
+          {
+            carNumber: null,
+            owner: null,
+            carType: null,
+            carSpec: null,
+            carLength: null,
+            carWidth: null,
+            carHeight: null,
+            useType: null,
+            brandType: null,
+            vin: null,
+            engineNo: null,
+            registerDate: null,
+            issueDate: null,
+            fileNumber: null,
+            drivingPermitFile: null,
+            drivingPermitFileOpposite: null,
+            carFile: null
+          }
+        ]
+      },
+
+      draverAudit: false, //审核校验状态
+      rulesForm: {
+        driverName: {
+          required: true,
+          message: "用户姓名不能为空",
+          trigger: "change"
+        },
+        driverMobile: {
+          validator: mobileValidator,
+          trigger: "change",
+          required: true
+        },
+        sex: { required: true, message: "请选择性别", trigger: "change" },
+        age: { required: true, message: "年龄不能为空", trigger: "change" },
+        cardid: {
+          validator: cardidValidator,
+          trigger: "change",
+          required: true
+        },
+        birthday: { required: true, message: "请选择生日", trigger: "change" },
+        // carNumber: {
+        //   validator: carNumberValidator,
+        //   trigger: "change",
+        //   required: true
+        // },
+        fileNumberLicense: {
+          required: true,
+          message: "档案编号不能为空",
+          trigger: "change"
+        },
+        belongCityName: {
+          required: true,
+          message: "认证所在地不能为空",
+          trigger: "change"
+        },
+        regisAddress: {
+          required: true,
+          message: "注册所在地不能为空",
+          trigger: "change"
+        },
+        personalImageFile: {
+          required: true,
+          message: "车主个人形象照需要上传",
+          trigger: "change"
+        },
+        idCardFile: {
+          required: true,
+          message: "车主身份证照片需要上传",
+          trigger: "change"
+        },
+        drivingLicenceFile: {
+          required: true,
+          message: "驾驶证正页需要上传",
+          trigger: "change"
+        },
+        drivingLicenceFileOpposite: {
+          required: true,
+          message: "驾驶证副本需要上传",
+          trigger: "change"
+        }
+        // carLength: { validator: carBreadth, trigger: "change", required: true },
+        // carWidth: { validator: carBreadth, trigger: "change", required: true },
+        // carHeight: { validator: carBreadth, trigger: "change", required: true }
+      },
+      DriverCarNumFrom: {
+        carNumber: "",
+        driverId: ""
+      },
+      radio1: "",
+      radio2: "",
+      radio3: "",
+      radio4: "",
+      radio5: "",
+      radio6: "",
+      radio7: "",
+      optionsBusinessInterests: [], //业务权益类型
+      spanArr: [],
+      pos: 0,
+      groupCode: null,
+      showPopupPic: false,
+      signImages: "",
+      chooseType: false
+    };
+  },
+  watch: {
+    driverTemplateDialogFlag: {
+      handler: function(val, oldVal) {
+        if (!val) {
+          if (this.$refs.belongCity) {
+            this.$refs.belongCity.clear();
+            this.$refs.regisAddress.clear();
+          }
+          this.templateModel = this.$options.data().templateModel;
+          this.radio1 = "";
+          this.radio2 = "";
+          this.radio3 = "";
+          this.radio4 = "";
+          this.radio5 = "";
+          this.radio6 = "";
+          this.radio7 = "";
+          this.$refs.templateModel.resetFields();
+          this.chooseType = false;
+          // this.templateModel.aflcBusinessInformationList = [];
+          if (this.$refs.belongCity) {
+            this.$refs.belongCity.clear();
+            this.$refs.regisAddress.clear();
+          }
+        } else {
+          this.btnStatus = true;
+          this.getMoreInformation();
+        }
+      }
+    },
+    isclick(newVal) {
+      if (newVal) {
+        this.$parent.isclick = false;
+        this.openDialog();
+      }
+    }
+  },
+  filters: {
+    remainData: val => {
+      if (!val) {
+        return "";
+      } else {
+        let timeData = new Date() - val;
+        let timeD = timeData / 1000 / 60 / 60 / 24;
+        let timeH = (timeData / 1000 / 60 / 60) % 24;
+        return parseInt(timeD) + "天" + parseInt(timeH) + "小时";
+      }
+    }
+  },
+  methods: {
+    carNumberValidator(rule, val, cb) {
+      var _this = this;
+      this.DriverCarNumFrom.carNumber = val;
+      if (!val) {
+        cb(new Error("车牌号不能为空"));
+      } else {
+        data_post_checkDriverCarNumber(_this.DriverCarNumFrom)
+          .then(res => {
+            cb();
+          })
+          .catch(err => {
+            cb(new Error(err.errorInfo || err.text));
+          });
+      }
+    },
+
+    // 车长宽高校验
+    carBreadth(rule, val, cb) {
+      var reg = /^[0-9]+(.[0-9]{1,2})?$/;
+      if (!val) {
+        cb(new Error("不能为空"));
+      } else if (!reg.test(val)) {
+        cb(new Error("保留2位小数"));
+      } else {
+        cb();
+      }
+    },
+    //打开
+    openDialog() {
+      this.chooseType = false;
+      this.expands = [];
+      if (!this.params) {
+        this.$message.warning("请选择您要操作的用户");
+        return false;
+      } else if (this.params.length == 0) {
+        this.$message.warning("请选择您要操作的用户");
+        return;
+      } else if (this.params.length > 1) {
+        this.$message({
+          message: "每次只能操作单条数据~",
+          type: "warning"
+        });
+        this.$emit("getData");
+        return;
+      } else {
+        data_get_driverName_id(this.params[0].driverId)
+          .then(res => {
+            this.templateModel = res.data;
+            this.DriverCarNumFrom.driverId = res.data.driverId;
+            this.DriverCarNumFrom.carNumber = res.data.carNumber;
+            this.expands.push(res.data.driverPermitList[0].id);
+            if (!this.templateModel.aflcBusinessInformationList) {
+              this.templateModel.aflcBusinessInformationList = [];
+            }
+
+            if (this.templateModel.aflcBusinessInformationList.length > 0) {
+              this.templateModel.aflcBusinessInformationList.forEach(item => {
+                item.updateTime = parseTime(
+                  item.updateTime,
+                  "{y}-{m}-{d} {h}:{i}:{s}"
+                );
+              });
+            }
+
+            // 监听客户上报跳转展示编辑
+            let isOnece = sessionStorage.getItem("once");
+            if (isOnece && isOnece === "true") {
+              let data = JSON.parse(sessionStorage.getItem("checkData"));
+              if (!!data && JSON.stringify(data) != "{}") {
+                this.templateModel.aflcBusinessInformationList.push({
+                  flag: false,
+                  belongSalesman: data.salesmanId,
+                  belongSalesmanMobile: data.mobile,
+                  belongSalesmanName: data.name,
+                  groupCode: data.groupCode,
+                  groupName: data.groupName,
+                  updateTime: parseTime(new Date(), "{y}-{m}-{d} {h}:{i}:{s}"),
+                  updater: "",
+                  userStatus: data.code,
+                  userStatusName: data.codeName
+                });
+              }
+            }
+          })
+          .catch(err => {
+            this.$message.error("获取数据失败");
+          });
+        this.driverTemplateDialogFlag = true;
+      }
+    },
+
+    // 查看图片
+    showCurrenPic(type, index) {
+      let vier = document.querySelector(".viewer-container");
+      vier.style.width = "100%";
+      vier.style.height = "100%";
+      switch (type) {
+        case "idCardFile":
+          this.signImages = this.templateModel.idCardFile;
+          break;
+        case "personalImageFile":
+          this.signImages = this.templateModel.personalImageFile;
+          break;
+        case "drivingLicenceFile":
+          this.signImages = this.templateModel.drivingLicenceFile;
+          break;
+        case "drivingLicenceFileOpposite":
+          this.signImages = this.templateModel.drivingLicenceFileOpposite;
+          break;
+        case "drivingPermitFile":
+          this.signImages = this.templateModel.driverPermitList[
+            index
+          ].drivingPermitFile;
+          break;
+        case "drivingPermitFileOpposite":
+          this.signImages = this.templateModel.driverPermitList[
+            index
+          ].drivingPermitFileOpposite;
+          break;
+        case "carFile":
+          this.signImages = this.templateModel.driverPermitList[index].carFile;
+          break;
+      }
+      this.showPopupPic = true;
+    },
+
+    //  关闭图片
+    closePopPic() {
+      this.showPopupPic = false;
+    },
+    // 账户登录状态
+    isOnLine(val) {
+      this.templateModel.isOnLine = val;
+    },
+    //  临时认证状态
+    isTempCertificate(val) {
+      this.templateModel.isTempCertificate = val;
+    },
+    //  公司业务员状态
+    isCompanySale(val) {
+      this.templateModel.isCompanySale = val;
+    },
+    // 需要后续跟进状态
+    driverFollowUp(val) {
+      this.templateModel.driverFollowUp = val;
+    },
+    // 特权车状态
+    isVipCar(val) {
+      this.templateModel.isVipCar = val;
+    },
+    // 广告车状态
+    isAd(val) {
+      this.templateModel.isAd = val;
+    },
+    // 获取信息
+    getMoreInformation() {
+      getDictionary("AF00204").then(res => {
+        this.activeValueList = res.data;
+      });
+      getDictionary("AF018").then(res => {
+        this.carTypeList = res.data;
+      });
+      getDictionary("AF009").then(res => {
+        this.carSpecList = res.data;
+      });
+      // 车主奖励等级
+      getDictionary("AF00207").then(res => {
+        this.carOwnerType = res.data;
+      });
+      // 中单等级的获取
+      getDictionary("AF00503").then(res => {
+        this.optionsLevel = res.data;
+      });
+      DicBusinessInterests().then(res => {
+        this.optionsBusinessInterests = res.data.filter(el => {
+          return el.name != "注册";
+        });
+      });
+    },
+    //关闭
+    change() {
+      this.$emit("getData");
+      this.driverTemplateDialogFlag = false;
+    },
+    // 合并表格
+    getSpanArr(data) {
+      this.spanArr = [];
+      this.pos = 0;
+      for (var i = 0; i < data.length; i++) {
+        if (i === 0) {
+          this.spanArr.push(1);
+          this.pos = 0;
+        } else {
+          // 判断当前元素与上一个元素是否相同
+          if (data[i].userStatus === data[i - 1].userStatus) {
+            this.spanArr[this.pos] += 1;
+            this.spanArr.push(0);
+          } else {
+            this.spanArr.push(1);
+            this.pos = i;
+          }
+        }
+      }
+    },
+    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex === 0) {
+        const _row = this.spanArr[rowIndex];
+        const _col = _row > 0 ? 1 : 0;
+        return {
+          rowspan: _row,
+          colspan: _col
+        };
+      }
+    },
+    getCustomer1(val, key) {
+      this.templateModel.aflcBusinessInformationList[
+        key
+      ].belongCustomerService = val.name;
+      this.templateModel.aflcBusinessInformationList[
+        key
+      ].belongCustomerServiceId = val.userId;
+    },
+    getReturnBelong(val, key) {
+      this.templateModel.aflcBusinessInformationList[key].belongSalesmanName =
+        val.name;
+      this.templateModel.aflcBusinessInformationList[key].belongSalesman =
+        val.userId;
+      this.templateModel.aflcBusinessInformationList[key].belongSalesmanMobile =
+        val.mobile;
+    },
+    getObject(i, e) {
+      this.templateModel.aflcBusinessInformationList[i].groupName = e.groupName;
+      this.templateModel.aflcBusinessInformationList[i].groupCode = e.groupCode;
+      this.templateModel.aflcBusinessInformationList[
+        i
+      ].belongSalesmanName = null;
+      this.templateModel.aflcBusinessInformationList[i].belongSalesman = null;
+      this.templateModel.aflcBusinessInformationList[
+        i
+      ].belongSalesmanMobile = null;
+    },
+    complateName(val, key) {
+      this.templateModel.aflcBusinessInformationList[
+        key
+      ].userStatusName = this.optionsBusinessInterests.find(
+        item => item.code == val
+      )["name"];
+    },
+
+    // 年龄计算
+    getAge(birth) {
+      if (birth) {
+        var year = 1000 * 60 * 60 * 24 * 365;
+        var now = new Date();
+        var birthday = new Date(birth);
+        var age = parseInt((now - birthday) / year);
+      }
+      return age;
+    },
+    // 获取是身份证信息
+    IdCardInmation(val) {
+      this.templateModel.driverName = val.name;
+      this.templateModel.cardid = val.cardid;
+      this.templateModel.address = val.address;
+      this.templateModel.birthday = val.birthday;
+      this.templateModel.sex = val.sex;
+      this.$set(this.templateModel, "age", this.getAge(val.birthday));
+      this.templateModel.nation = val.nation;
+      this.$forceUpdate();
+    },
+    // 获取驾驶证信息
+    drivingLicenceFileInmation(val) {
+      this.$set(this.templateModel, "vldStartLicence", val.vldStart);
+      if (val.vldEnd.toString().indexOf("年") !== -1) {
+        val.vldEnd = parseTime(val.vldStart, "{y}-{m}-{d}");
+        let newVldEnd = val.vldEnd.split("-");
+        newVldEnd[0] = parseInt(newVldEnd[0]) + 6;
+        let newVldEndArarry =
+          newVldEnd[0] + "-" + newVldEnd[1] + "-" + newVldEnd[2];
+        this.$set(
+          this.templateModel,
+          "vldEndLicence",
+          new Date(newVldEndArarry).getTime()
+        );
+      } else {
+        this.$set(this.templateModel, "vldEndLicence", val.vldEnd);
+      }
+      if (new Date().getTime() > this.templateModel.vldEndLicence) {
+        this.templateModel.vldEndLicenceExpire = "是";
+      } else {
+        this.templateModel.vldEndLicenceExpire = "否";
+      }
+      this.templateModel.nationality = val.nationality;
+      this.templateModel.classType = val.classType;
+      this.$set(this.templateModel, "firstTimeLicense", val.firstTimeLicense);
+      this.$forceUpdate();
+    },
+    // 获取行驶证信息
+    drivingPermitFileInmation(val) {
+      this.templateModel.driverPermit.carNumber = val.carNumber;
+      this.templateModel.driverPermit.owner = val.owner;
+      this.templateModel.driverPermit.useType = val.useType;
+      this.templateModel.driverPermit.brandType = val.brandType;
+      this.templateModel.driverPermit.vin = val.vin;
+      this.templateModel.driverPermit.engineNo = val.engineNo;
+      this.templateModel.driverPermit.fileNumber = val.fileNumber;
+      this.$set(
+        this.templateModel.driverPermit,
+        "registerDate",
+        val.registerDate
+      );
+      this.$set(this.templateModel.driverPermit, "issueDate", val.issueDate);
+      this.$forceUpdate();
+    },
+
+    // 内部权益按钮
+    handleClick(type, index) {
+      switch (type) {
+        case "addItem":
+          this.chooseType = true;
+          this.spanArr.push(1);
+          this.templateModel.aflcBusinessInformationList.push({
+            flag: true,
+            userStatus: "", //用户服务类型（0：注册 1：认证 2：后续跟进）
+            userStatusName: "",
+            groupName: "", //分组名称
+            groupCode: "", //分组代码
+            belongSalesmanName: "", //所属业务员名称
+            belongSalesmanMobile: "", //所属业务员手机号码
+            belongSalesman: "", //所属业务员Id
+            updateTime: "", //更新时间
+            updater: "" //修改人
+          });
+          break;
+        case "conserve":
+          let pass = false;
+          let newForm = this.templateModel.aflcBusinessInformationList[
+            this.templateModel.aflcBusinessInformationList.length - 1
+          ];
+          if (
+            newForm.userStatus == "" ||
+            newForm.groupCode == "" ||
+            newForm.belongSalesman == ""
+          ) {
+            pass = true;
+          }
+          if (!pass) {
+            this.chooseType = false;
+            this.templateModel.aflcBusinessInformationList[
+              this.templateModel.aflcBusinessInformationList.length - 1
+            ].flag = false;
+          } else {
+            return this.$message({
+              type: "warning",
+              message: "当前信息存在空值，不可保存!"
+            });
+          }
+          break;
+        case "cancel":
+          this.chooseType = false;
+          this.templateModel.aflcBusinessInformationList.pop();
+          break;
+        case "conserve":
+          sessionStorage.setItem("once", false);
+          break;
+        case "delet":
+          if (this.chooseType) {
+            return this.$message({
+              type: "warning",
+              message: "请先保存或取消当前编辑内容!"
+            });
+          } else {
+            this.templateModel.aflcBusinessInformationList.splice(index, 1);
+          }
+          break;
+      }
+    },
+    // 所在地
+    regionChange(d) {
+      this.templateModel.belongCityName =
+        !d.province && !d.city && !d.area && !d.town
+          ? ""
+          : `${this.getValue(d.province)}${this.getValue(
+              d.city
+            )}${this.getValue(d.area)}${this.getValue(d.town)}`.trim();
+      if (d.area) {
+        this.templateModel.areaCode = d.area.name;
+        this.templateModel.belongCity = d.area.code;
+      } else if (d.city) {
+        this.templateModel.belongCity = d.city.code;
+        this.templateModel.cityCode = d.city.name;
+      } else if (d.province) {
+        this.templateModel.belongCity = d.province.code;
+        this.templateModel.provinceCode = d.province.name;
+      }
+    },
+    // 注册所在地
+    regisaddressChange(d) {
+      this.templateModel.regisAddress =
+        !d.province && !d.city && !d.area && !d.town
+          ? ""
+          : `${this.getValue(d.province)}${this.getValue(
+              d.city
+            )}${this.getValue(d.area)}${this.getValue(d.town)}`.trim();
+      if (d.area) {
+        this.templateModel.regisAddressCode = d.area.name;
+      } else if (d.city) {
+        this.templateModel.regisAddressCode = d.city.code;
+      } else if (d.province) {
+        this.templateModel.regisAddressCode = d.province.code;
+      }
+    },
+    getValue(obj) {
+      return obj ? obj.value : "";
+    },
+    completeData() {
+      if (this.radio6 == null) {
+        this.$message.info("请选择车主身份证照片审核结果");
+        return false;
+      }
+      if (this.radio7 == null) {
+        this.$message.info("请选择车主个人形象照片审核结果");
+        return false;
+      }
+      if (this.radio1 == null) {
+        this.$message.info("请选择驾驶证照片审核结果");
+        return false;
+      }
+      if (this.radio2 == null) {
+        this.$message.info("请选择驾驶证照副页照片审核结果");
+        return false;
+      }
+      if (this.radio3 == null) {
+        this.$message.info("请选择车辆行驶证照片审核结果");
+        return false;
+      }
+      if (this.radio4 == null) {
+        this.$message.info("请选择车辆行驶证副本照片审核结果");
+        return false;
+      }
+      if (this.radio5 == null) {
+        this.$message.info("请选择车辆45°照片审核结果");
+        return false;
+      }
+    },
+    rowClick(row, column, event) {
+      let i = this.expands.findIndex((value, index) => {
+        return value == row.id;
+      });
+      if (i == -1) {
+        this.expands.push(row.id);
+      } else {
+        this.expands.splice(i, 1);
+      }
+    },
+    // 审核通过
+    handlerPass() {
+      this.templateModel.driverPermit = this.templateModel.driverPermitList[0];
+      var forms = Object.assign({}, this.templateModel, this.authNoPassCause, {
+        driverStatus: "AF0010403"
+      });
+      console.log(forms);
+      this.$refs["templateModel"].validate(valid => {
+        if (valid) {
+          if (this.completeData() == false) {
+            return;
+          } else {
+            if (this.chooseType) {
+              this.$message({
+                type: "error",
+                message: "检测到新增权益类型未保存!请先保存!"
+              });
+            } else {
+              if (
+                this.radio1 == "" &&
+                this.radio2 == "" &&
+                this.radio3 == "" &&
+                this.radio4 == "" &&
+                this.radio5 == "" &&
+                this.radio6 == "" &&
+                this.radio7 == ""
+              ) {
+                this.driverTemplateDialogFlag = false;
+                this.$message.info("审核通过提交中...");
+                data_post_audit(forms)
+                  .then(res => {
+                    this.$message.success("审核通过提交成功");
+                    sessionStorage.setItem("once", false);
+                    this.$emit("getData");
+                  })
+                  .catch(err => {
+                    this.$emit("getData");
+                    this.$message.error("审核失败");
+                  });
+              } else {
+                this.$message.error(
+                  "图片审核中图片有不合格的，不能进行审核通过处理"
+                );
+              }
+            }
+          }
+        } else {
+          this.$message.error("内容未填写完整");
+        }
+      });
+    },
+    // 审核不通过
+    handlerOut() {
+      this.templateModel.driverPermit = this.templateModel.driverPermitList[0];
+      var forms = Object.assign({}, this.templateModel, this.authNoPassCause, {
+        driverStatus: this.btntitle == "车辆审核" ? "AF0010406" : "AF0010404"
+      });
+      // console.log("forms", forms);
+      if (this.completeData() == false) {
+        return;
+      } else {
+        if (this.chooseType) {
+          this.$message({
+            type: "error",
+            message: "检测到新增权益类型未保存!请先保存!"
+          });
+        } else {
+          if (
+            this.radio1 == "" &&
+            this.radio2 == "" &&
+            this.radio3 == "" &&
+            this.radio4 == "" &&
+            this.radio5 == "" &&
+            this.radio6 == "" &&
+            this.radio7 == ""
+          ) {
+            this.$message.error(
+              "图片审核中图片全部合格，不能进行审核不通过处理"
+            );
+          } else {
+            this.driverTemplateDialogFlag = false;
+            this.$message.info("审核不通过提交中...");
+            data_post_audit(forms)
+              .then(res => {
+                this.$message.success("审核不通过提交成功");
+                this.$emit("getData");
+              })
+              .catch(err => {
+                this.$message.error("审核失败");
+                this.$emit("getData");
+              });
+          }
+        }
+      }
+    }
+  },
+  computed: {
+    // 图片审核计算
+    authNoPassCause: function() {
+      return {
+        authNoPassCauseIdCard: this.radio6,
+        authNoPassCauseOfPersonal: this.radio7,
+        authNoPassCauseOfDrivingLicence: this.radio1,
+        authNoPassCauseDrivingLicenceOpposite: this.radio2,
+        authNoPassCauseDrivingPermit: this.radio3,
+        authNoPassCauseDrivingPermitOpposite: this.radio4,
+        authNoPassCauseOfCar: this.radio5
+      };
+    }
+  },
+  mounted() {}
+};
+</script>
+            
+<style lang="scss">
+</style>
+            

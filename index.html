@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>28快运云平台</title>
+    <meta name="keywords" content="广州市安发网络科技有限公司">
+    <script>
+      var modernBrowser = (
+        'fetch' in window &&
+        'assign' in Object
+      );
+
+      if ( !modernBrowser ) {
+        var scriptElement = document.createElement('script');
+        scriptElement.async = false;
+        scriptElement.src = '/polyfills.js';
+        document.head.appendChild(scriptElement);
+      }
+      window.loadedGaodeMapYY = function() {
+        window.hadLoaded = true
+      }
+    </script>
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=73bdb8428fbfe511ed6c5f3328b5734b&plugin=AMap.CitySearch,AMap.Autocomplete,AMap.DistrictSearch,AMap.Geocoder,AMap.OverView,AMap.TruckDriving,AMap.Scale,AMap.MouseTool&callback=loadedGaodeMapYY"></script>
+    <script src="https://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+    <!-- <script src="https://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script> -->
+    <!-- <script src="node_modules\xlsx-style\dist\xlsx.full.min.js"></script> -->
+    <!-- <script src="./static/xlsx.full.min.js"></script> -->
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>

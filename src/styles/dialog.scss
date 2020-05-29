@@ -1,0 +1,208 @@
+.commoncss{
+    .el-dialog{
+        max-height:90%;
+        // overflow:auto;
+        overflow-x: hidden;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        .el-dialog__header{
+            border-bottom:1px solid #ccc;
+            text-align:center;
+            height:40px;
+            padding:10px 0;
+            color:#fff;
+            font-weight:bold;
+            background-color: #42485b;
+            .el-dialog__title{
+                font-size: 16px;
+                font-weight: normal;
+                font-stretch: normal;
+                line-height: 20px;
+                color: #ffffff;
+            }
+            .el-dialog__headerbtn{
+                top:10px;
+                right:10px;
+            }
+        }
+        .el-dialog__body{
+            flex: 1;
+            overflow-x: hidden;
+            padding: 20px 30px;
+            // border:1px solid #ccc;
+            .el-table{
+                margin: 10px 0 20px;
+                .cell{
+                    .needMoreInfo{
+                        cursor:pointer;
+                        color:#3e9ff1;
+                        overflow:hidden; //超出的文本隐藏
+                        text-overflow:ellipsis; //溢出用省略号显示
+                        white-space:nowrap; //溢出不换行
+                    }
+                }
+            }
+            .addItem{
+                display:inline-block;
+                height: 26px;
+                width:26px;
+                line-height: 26px;
+                cursor: pointer;
+                background:url('../assets/icom/23zengjia.png') no-repeat center;
+                position: absolute;
+                top:-5px;
+                left:0;
+                &:hover{
+                    background:url('../assets/icom/24zengjia-b.png') no-repeat center;
+                }
+            }
+            .reduceItem{
+                display:inline-block;
+                height: 26px;
+                width:26px;
+                line-height: 26px;
+                cursor: pointer;
+                background:url('../assets/icom/21shanchu.png') no-repeat center;
+                position: absolute;
+                top:-5px;
+                left:0;
+                &:hover{
+                    background:url('../assets/icom/22shanchu-b.png') no-repeat center;
+                }
+            }
+            .el-form{
+                .el-form-item{
+                    border:0 none;
+                    position: relative;
+                    // margin-bottom: 12px;
+                    .el-form-item__label{
+                        font-size:14px;
+                        padding:1px 5px 0 0;
+                    }
+                    .el-form-item__content{
+                        position: relative;
+                        .el-input{
+                            .el-input__inner{
+                                color:#3e9ff1;
+                                line-height: 26px;
+                                font-size:14px;
+                                padding:2px 10px;
+                                height: 40px;
+                                line-height: 40px;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                            }
+                        }
+                        .el-input--mini .el-input__inner {
+                            height: 28px;
+                            line-height: 28px;
+                            width: 125px;
+                        }
+                        .el-date-editor{
+                            .el-input__inner{
+                                padding: 2px 35px;
+                            }
+                        }
+                        .el-select,.el-cascader,.el-autocomplete{
+                            width: 100%;
+                        }
+                        .v-region,.v-region .caller-container{
+                            width: 100%;
+                        }
+                    }
+                    .onlyShow{
+                        display: inline-block;
+                        min-width: 250px;
+                        width: 100%;
+                        height: 40px;
+                        line-height: 40px;
+                        text-align: left;
+                        text-indent: 10px;
+                        color: #3e9ff1;
+                        // border: 1px solid #cccccc;
+                        background: rgba(227, 233, 235, 0.479);
+                    }
+                }
+                .textArea{
+                    width: 100%;     
+                    .el-form-item__content{
+                        min-width: 85%;
+                        position: relative;
+                        .el-textarea__inner{
+                            padding-bottom: 20px;
+                        }
+                        .countNum{
+                            position: absolute;
+                            right: 15px;
+                            bottom: 0;
+                            font-size: 12px;
+                            line-height: 20px;
+                            color: #666;
+                            span:first-child{
+                                color: red;
+                            }
+                        }
+                    }  
+                }
+                .moreWords .el-form-item__label{
+                    line-height: 20px;
+                }
+            }
+            .systemTitle{
+                text-align: center; 
+                border-collapse: collapse;
+                width:100%;
+                th,tr td { 
+                    border:1px solid #ccc; 
+                }
+                th{
+                    line-height: 30px;
+                    background: #eaefff;
+                }
+                tr td{
+                    padding: 5px 10px;
+                    .el-select{
+                        width:100%;
+                    }
+                }
+                .lastOne{
+                    width: 100px;
+                    .addItem,.reduceItem{
+                        position: relative;
+                        top: 8px;
+                    }
+                }
+                .licensePicture{
+                    height: 80px;
+                    .el-upload-dragger .el-button{
+                        margin-top: 10px;
+                    }
+                    .el-upload-dragger{
+                        padding: 0 10px;
+                    }
+                    .image-preview .image-preview-action{
+                        line-height: 95px;
+                    }
+                }
+            }
+        }
+        .dialog-footer{
+            text-align:center;
+            padding: 0;
+            .el-button+.el-button {
+                margin-left: 10px;
+            }
+        }
+    }
+    .el-dialog .el-dialog__body .el-form .el-row  .el-col .el-form-item__content .el-date-editor .el-input__inner{
+        padding-left: 30px;
+    }
+    .el-radio-group{
+        margin-left: 20px; 
+        .el-radio+.el-radio{
+            margin-left: 25px;
+        }
+    }
+}

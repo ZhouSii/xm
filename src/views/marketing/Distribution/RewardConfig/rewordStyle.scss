@@ -1,0 +1,48 @@
+.rewordStyle{
+    .el-dialog__wrapper{
+        .el-dialog{
+            .el-dialog__body{
+                margin-bottom: 0; 
+                .el-form{
+                    .el-row{
+                        h2{
+                            line-height: 40px;
+                            padding-top:10px;
+                        }
+                        .el-form-item {
+                            margin-bottom: 10px;
+                            .el-date-editor--daterange.el-input__inner{
+                                width:100%;
+                            }
+                        }
+                    }
+                    .rewordRemark{
+                        padding: 10px;
+                        margin: 22px 0 0;
+                        border: 1px dashed #cccc;
+                        background: #f0f0f0;
+                        p{
+                            font-size:16px;
+                            line-height: 30px;
+                        }
+                        ul{
+                            li{
+                                line-height: 20px;
+                                span+span{
+                                    margin-left: 5px;
+                                }
+                            }
+                        }
+                    }
+                }
+                .systemTitle{
+                    tr td{
+                       .el-input {
+                            width: 45%;
+                       }
+                    }
+                }
+            }
+        }
+    }
+}

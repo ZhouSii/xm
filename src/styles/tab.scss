@@ -1,0 +1,130 @@
+
+.el-tabs{
+    height: 100%;
+    .el-tabs__content{
+        height: 95%;
+        .el-tab-pane{
+            height: 100%;
+        }
+    }
+    .el-tabs__header {
+        margin: 0;
+        /* margin: 0 0 15px; */
+    }
+}
+
+.tabsWrap{
+    height:100%;    
+    position: relative;
+    padding-right: 10px;
+    padding-top: 12px;
+    .el-tabs,.el-tabs--card,.el-tabs--top{
+        display: flex;
+        flex-direction: column;
+    }
+    .el-tabs--card>.el-tabs__header {
+        border-bottom: 1px solid #03a9f4;
+        padding-left: 10px;
+        // padding-top: 12px;
+    }
+    .el-tabs__content {
+        // overflow: auto;
+        flex: 1;
+        flex-grow: 1;
+        .identicalStyle {
+            padding-right: 0;
+        }
+    }
+    .el-tabs--card>.el-tabs__header .el-tabs__nav{
+        border: 0 none;
+    }
+
+    .el-tabs--card>.el-tabs__header .el-tabs__item:first-child {
+        border-left: 1px solid #d2d2d2;
+    }
+    .el-tabs__item{
+        border: 1px solid #d2d2d2;
+        border-top-width:2px; 
+        border-radius: 4px 4px 0px 0px;
+        border-bottom: 0 none;
+        height: 30px;
+        line-height: 30px;
+    }
+
+    .el-tabs__item:hover {
+        color: #409EFF;
+        cursor: pointer;
+    }
+
+    .el-tabs--card>.el-tabs__header .el-tabs__item.is-active {
+        font-weight: bold;
+        border-color: #03a9f4;
+        background: #ffffff;
+        border-bottom-color: #ffffff;
+    }
+    // .el-tab-pane{
+    //     .el-table th .cell {
+    //         white-space: initial;
+    //         overflow: hidden;
+    //         min-height: 30px;
+    //         line-height: 30px;
+    //     }
+    // }
+}
+
+.viewtip{
+    font-size: 12px;
+    color: #999;
+    margin-left: 10px;
+    line-height: 30px;
+}
+
+@media screen and (max-width:1308px){
+  .tab-content {
+      .staff_searchinfo{
+          .el-form-item{
+              margin-bottom: 10px;
+          }
+      }
+      .staff_searchinfo--btn{
+          float: none;
+      }
+  }
+}
+/**
+搜索框样式
+**/
+.staff_searchinfo{
+    padding:0 0 10px;
+    margin: 0 10px;
+    border-bottom:1px dashed #999;
+    
+    .el-input__inner{
+        border-color: #ccc;
+        border-radius: 2px;
+    }
+
+    .staff_searchinfo--input{
+      float: left;
+      width: 100%;
+      .el-form-item{
+        margin-bottom: 0;
+        margin-right: 15px;
+        margin-top: 9px;
+      }
+    }
+    .el-form--inline .el-form-item__label{
+        vertical-align: top;
+    }
+    .el-form-item{
+        margin-bottom: 0;
+    }
+    .el-date-editor--daterange.el-input__inner{
+      width: 193px;
+    }
+    .el-range-editor.el-input__inner{
+        padding: 3px 5px;
+    }
+}
+
+

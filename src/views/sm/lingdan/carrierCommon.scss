@@ -1,0 +1,316 @@
+.carrierCommonStyle{
+    background: #f2f2f2;
+    .el-form{
+        overflow: hidden;
+        >.searchInformation{
+            .el-form-item{
+                margin-bottom: 40px;
+                .el-form-item__content{
+                    .v-region{
+                        width: 100%;
+                        .caller-container{
+                            width: 100%;
+                        }
+                        .v-dropdown-container{
+                            top: 40px !important;
+                            left: 0px !important;
+                        }
+                    }
+                }
+            }
+        }
+
+        .rangeCommon{
+            background: #ffffff;
+            margin-top: 18px;
+            padding: 0 20px;
+            box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.1);
+            h2{
+                border-bottom: solid 2px #e0e0e0;
+                line-height: 25px;
+                font-size: 18px;
+                padding: 36px 0 18px 0;
+                color: #333333;
+                font-weight: bold;
+                font-stretch: normal;
+                margin-bottom: 20px;
+            }
+            .location_line{
+                .el-form-item__content{
+                    line-height: 28px;
+                    .el-select{
+                        width: 100%;
+                    }
+                }
+            }
+        }
+        .priceTime{
+            margin-bottom: 18px;
+            padding-bottom: 20px;
+            .el-input{
+                width: 264px;
+            }
+            .el-form-item{
+                .el-form-item__content{
+                    position: relative;
+                    width: 100%;
+                    .supplement{
+                        font-size: 12px;
+                        color: #ccc;
+                    }
+                    .tips{
+                        color: #666;
+                        margin-left: 10px;
+                        vertical-align: middle;
+                    }
+                }
+            }
+            .inlineForm{
+                display: inline-block;
+                margin-bottom: 40px;
+            }
+
+            .inlineForm_odd{
+                margin-left: 8%;
+            }
+            .jieti{
+                .el-form-item__content{
+                    width: 86%;
+                    .el-input{
+                        width: 50px;
+                    }
+                    p{
+                        font-size: 12px;
+                        color:red;
+                    }
+                    .goodsPriceChoose{  
+                        border: 1px solid #ccc;
+                        border-bottom: 0 none;
+                        .fixPrice{
+                            .el-input{
+                                width:40%;
+                            }
+                            .el-radio{
+                                width: 35%;
+                            }
+                        }
+
+                        .el-row{
+                            text-align: center;
+                            .el-col{
+                                border-right: 1px solid #ccc;
+                                position: relative;
+                               
+                            }
+                            .el-col:last-child{
+                                border: 0 none;
+                            }
+                            .intervalNum{
+                                position: relative;
+                                .el-input{
+                                    width: 24%;
+                                    min-width: 105px;
+                                }
+                            }
+                            
+                            .blackBook{
+                                padding: 10px 0;
+                            }
+                            .otherStyle{
+                                .el-row{
+                                    .el-col{
+                                        padding: 10px 0;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        .deliverGoods{
+                            font-size: 0;
+                            display: flex;
+                            border-bottom: 1px solid #ccc;
+                            .intervalNum{
+                                display: inline-block;
+                                box-sizing: border-box;
+                                padding: 10px 0;
+                                text-align: center;
+                                vertical-align: middle;
+                                position: relative;
+                                span{
+                                    font-size: 14px;
+                                }
+                                .el-input{
+                                    width: 24%;
+                                    min-width: 105px;
+                                }
+                            }
+                            .blackBook{
+                                width: 25%;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                border-right: 1px solid #ccc;
+                                .iconItem{
+                                    margin-left: 10px;
+                                }
+                            }
+                            .otherStyle{
+                                width: 50%;
+                                vertical-align: middle;
+                                padding: 0;
+                                .otherStyleBox{
+                                    display: flex;
+                                    height: 65px;
+                                    .otherStyleBoxStyle{
+                                        width: 50%;
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                    }
+                                    .otherStyleBox_left{
+                                        border-right: 1px solid #ccc;
+                                        .iconItem{
+                                            margin-left: 10px;
+                                        }
+                                    }
+                                    .otherStyleBox_right{
+                                        .el-input{
+                                            width: 40%;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        .el-row + .el-row{
+                            border-bottom: 1px solid #ccc;
+                        }
+
+                        .iconItem{
+                            min-width: 56px;
+                            float: right;
+                            padding-top:6px; 
+                            margin-right: 10px;
+                            height: 36px;
+                            text-align: left;
+                            // position: absolute;
+                            // top: 17px;
+                            // right: 5px;
+                            .addItem{
+                                display:inline-block;
+                                height: 26px;
+                                width:26px;
+                                line-height: 26px;
+                                cursor: pointer;
+                                background:url('../../../assets/icom/23zengjia.png') no-repeat center;
+                                // position: absolute;
+                                // top:15px;
+                                // right: 80px;
+                                &:hover{
+                                    background:url('../../../assets/icom/24zengjia-b.png') no-repeat center;
+                                }
+                            }
+                            .reduceItem{
+                                display:inline-block;
+                                height: 26px;
+                                width:26px;
+                                line-height: 26px;
+                                cursor: pointer;
+                                background:url('../../../assets/icom/21shanchu.png') no-repeat center;
+                                // position: absolute;
+                                // top:15px;
+                                // right:40px;
+                                &:hover{
+                                    background:url('../../../assets/icom/22shanchu-b.png') no-repeat center;
+                                }
+                            }
+                        }
+                        .goodsPriceChoose_title{
+                            background: #eaefff;
+                            font-size: 14px;
+                            color: #333333;
+                        }
+                        p{
+                            padding: 6px 50px;                     
+                            background: #eaefff;
+                            font-size: 14px;
+                            line-height: 17px;
+                            color: #333333;
+                            span{
+                                strong{
+                                    color: red;
+                                    font-size: 12px;
+                                }
+                            }
+                            span:first-child{
+                                margin:0 21%;
+                            }
+                            span:nth-child(2){
+                                margin:0 13%;
+                            }
+                             span:nth-child(3){
+                                margin:0 122px;
+                            }
+                        }
+                        ul{
+                            padding: 8px 110px 8px 50px;
+                            font-size: 12px;
+                            position: relative;
+                            overflow: hidden;
+                            li{
+                                .el-input{
+                                    width: 41%;
+                                }
+                                float: left;
+                            }
+                            li:first-child{
+                                margin-left: 9%;
+                            }
+                            li:nth-child(2){
+                                margin-left: 15%;
+                                .el-input{
+                                    width: 86%;
+                                }
+                            }
+                            li:nth-child(3){
+                                margin-left: 21%; 
+                            }
+                            .buttons{
+                                position: absolute;
+                                right: 0;
+                                top: 0;
+                            }
+                            .addItem{
+                                display:inline-block;
+                                height: 26px;
+                                width:26px;
+                                line-height: 26px;
+                                cursor: pointer;
+                                background:url('../../../assets/icom/23zengjia.png') no-repeat center;
+                                // position: absolute;
+                                // top:15px;
+                                // right: 80px;
+                                &:hover{
+                                    background:url('../../../assets/icom/24zengjia-b.png') no-repeat center;
+                                }
+                            }
+                            .reduceItem{
+                                display:inline-block;
+                                height: 26px;
+                                width:26px;
+                                line-height: 26px;
+                                cursor: pointer;
+                                background:url('../../../assets/icom/21shanchu.png') no-repeat center;
+                                // position: absolute;
+                                // top:15px;
+                                // right:40px;
+                                &:hover{
+                                    background:url('../../../assets/icom/22shanchu-b.png') no-repeat center;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

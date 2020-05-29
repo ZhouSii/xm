@@ -1,0 +1,87 @@
+.StyleNewinfoComponent{
+    display: inline;
+    .el-dialog{
+        overflow: unset!important;
+        width: 1320px;
+        // max-height: inherit;
+        .el-date-editor{
+            width:100%;
+        }
+    .carNewinfoH2{
+        color:#f4f4f5;
+        background:#909399;
+        padding:10px 0px;
+        text-indent: 20px;
+        margin:10px 0px 20px;
+        position: relative;
+        .aflcBusinessBtn{
+            position: absolute;
+            right: 10px;
+            top: 4px;
+        }
+    }    
+    .uploadH3{
+        text-align:center;
+        border-bottom:1px solid #eee;
+        background: #eee;
+        position: relative;
+        .showPictureBtn{
+            position: absolute;
+            right: 3px;
+            top: 3px;
+            padding: 10px 20px;
+        }
+    }
+    .addressformLabel{
+        .el-input__inner{
+            width:495px;
+        }
+    }
+    .CheckPass{
+        .el-form-item:first-child{
+            margin-bottom: 0;
+        }
+        .el-form-item + .el-form-item{
+            border: 1px solid #eee;
+            border-top:0 none;
+            padding: 5px 10px 5px 0;
+        }
+    }
+    .uploadPicture{
+        width: 100%;
+        border:1px solid #eee;
+        margin:0px auto;
+        .uploadImgBox{
+            width:100%;
+            height: 240px;
+            line-height:15px;
+            text-align:center;
+            img{
+                width: 100%;
+                height: 100%;
+            }
+            .picURL{
+                width: 385px;
+                height: 215px;
+                cursor: pointer;
+            }
+        }
+        .upload_True{
+            padding: 2px;
+        }
+        .uploadRadioBox{
+            padding-left:10px;
+            display:flex;
+            justify-content: space-between;
+            border-top:1px solid #eee;
+            .el-select{
+                width:250px!important;
+            }
+        }
+    }
+    .lessWidth{
+        width: 60px;
+        display: inline-block;
+    }
+    }
+}

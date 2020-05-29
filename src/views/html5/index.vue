@@ -1,0 +1,1866 @@
+<template>
+  <div class="topLayer">
+    <div id="monitor_map"></div>
+    <div style="position: absolute;left: 0;top:0">
+      <div class="ctl">
+        <el-checkbox class="btn3" v-model="satelliteVisible" label="卫星图" border size="medium"
+                     @change="displaySatellite"></el-checkbox>
+        <el-checkbox class="btn2 btn3" v-model="trafficVisible" label="实时路况" border size="medium"
+                     @change="displayTraffic"></el-checkbox>
+      </div>
+      <div class="ctl2">
+        <el-button class="btn2 btn4" @click="displayAllMarkers" :loading="processState.displayAllMarkers"
+                   size="medium">
+          显示全部车辆
+        </el-button>
+        <el-button class="btn2 btn4" @click="centerMark" size="medium">
+          移动到中心点
+        </el-button>
+      </div>
+    </div>
+    <div class="orderSearch">
+      <el-input class="orderSearchInput" placeholder="请输入内容" v-model.trim="filterText" clearable
+                @keyup.enter.native="clickOrder(null,true)">
+        <el-button slot="append" icon="el-icon-search" class="orderSearchButton" @click="clickOrder(null,true)">搜索
+        </el-button>
+      </el-input>
+      <div class="showOrderSearchResult" @click="clickOrderSearchResult" :style="showOrderSearchResultStyle">
+        {{showOrderSearchResultIcon}}
+      </div>
+      <div class="orderSearchResult" v-show="showOrderSearchResult">
+        <el-badge :value="orderNumAll">
+          <div ref="ttt" class="orderSearch_title allOrder"
+               :style="{color:('全部服务中' === orderStatus)?'#f56c6c':'black', 'border-bottom':('全部服务中' === orderStatus)?'2px solid rgb(245, 108, 108':'2px solid #fff'}"
+               @click="clickOrder('全部服务中',true)">
+            全部服务中
+          </div>
+        </el-badge>
+        <div class="table">
+          <div class="row">
+            <div class="cell3" @click="clickOrder('司机已接单',true)">
+              <el-badge :value="orderNumJiedan" :max="maxNum"
+                        :style="{color:('司机已接单' === orderStatus)?'#f56c6c':'black', 'border-bottom':('司机已接单' === orderStatus)?'2px solid rgb(245, 108, 108':'2px solid #fff'}">
+                司机已接单
+              </el-badge>
+            </div>
+            <div class="cell cell3" @click="clickOrder('司机赶往提货地',true)">
+              <el-badge :value="orderNumGanwangtwd" :max="maxNum"
+                        :style="{color:('司机赶往提货地' === orderStatus)?'#f56c6c':'black', 'border-bottom':('司机赶往提货地' === orderStatus)?'2px solid rgb(245, 108, 108':'2px solid #fff'}">
+                司机赶往提货地
+              </el-badge>
+            </div>
+            <div class="cell cell3" @click="clickOrder('司机已到提货地',true)">
+              <el-badge :value="orderNumYidaotwd" :max="maxNum"
+                        :style="{color:('司机已到提货地' === orderStatus)?'#f56c6c':'black', 'border-bottom':('司机已到提货地' === orderStatus)?'2px solid rgb(245, 108, 108':'2px solid #fff'}">
+                司机已到提货地
+              </el-badge>
+            </div>
+          </div>
+          <div class="row">
+            <div class="cell3" @click="clickOrder('司机已装货',true)">
+              <el-badge :value="orderNumYizhuanghuo" :max="maxNum"
+                        :style="{color:('司机已装货' === orderStatus)?'#f56c6c':'black', 'border-bottom':('司机已装货' === orderStatus)?'2px solid rgb(245, 108, 108':'2px solid #fff'}">
+                司机已装货
+              </el-badge>
+            </div>
+            <div class="cell cell3" @click="clickOrder('运输中',true)">
+              <el-badge :value="orderNumYunshuzhong" :max="maxNum"
+                        :style="{color:('运输中' === orderStatus)?'#f56c6c':'black', 'border-bottom':('运输中' === orderStatus)?'2px solid rgb(245, 108, 108':'2px solid #fff'}">
+                运输中
+              </el-badge>
+            </div>
+            <div class="cell cell3" @click="clickOrder('司机已到目的地',true)">
+              <el-badge :value="orderNumYidaomdd" :max="maxNum"
+                        :style="{color:('司机已到目的地' === orderStatus)?'#f56c6c':'black', 'border-bottom':('司机已到目的地' === orderStatus)?'2px solid rgb(245, 108, 108':'2px solid #fff'}">
+                司机已到目的地
+              </el-badge>
+            </div>
+          </div>
+          <div class="row">
+            <div class="cell cell3" @click="clickOrder('司机已卸货',true)">
+              <el-badge
+                :style="{color:('司机已卸货' === orderStatus)?'#f56c6c':'black', 'border-bottom':('司机已卸货' === orderStatus)?'2px solid rgb(245, 108, 108':'2px solid #fff'}"
+                :value="orderNumYixiehuo" :max="maxNum">
+                司机已卸货
+              </el-badge>
+            </div>
+            <div class="cell cell3" @click="clickOrder('司机改派',true)">
+              <el-badge :value="orderNumGaipai" :max="maxNum"
+                        :style="{color:('司机改派' === orderStatus)?'#f56c6c':'black', 'border-bottom':('司机改派' === orderStatus)?'2px solid rgb(245, 108, 108':'2px solid #fff'}">
+                司机改派
+              </el-badge>
+            </div>
+          </div>
+        </div>
+        <div style="max-height: 375px;overflow: auto;margin-top: 12px">
+          <div class="table">
+            <div class="row">
+              <div class="cellHeader" style="width: 40px">
+                序号
+              </div>
+              <div class="cellHeader">
+                车牌号
+              </div>
+              <div class="cellHeader">
+                司机
+              </div>
+              <div class="cellHeader">
+                联系电话
+              </div>
+            </div>
+            <div :class="{'row':true, 'rowclick':true,'rowFocus':(markerIdx===index)}" v-for="(item,index) in carList"
+                 :key="item.orderSerial"
+                 @click="clickOrder2(index)">
+              <div class="cell4" style="width: 40px">
+                <!-- {{item.orderSerial}} -->
+                {{ (currentPage - 1)*pageSize + index + 1 }}
+
+              </div>
+              <div class="cell2">
+                {{item.carNumber}}
+              </div>
+              <div class="cell2">
+                {{item.driverName}}
+              </div>
+              <div class="cell2">
+                {{item.driverMobile}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="carPager">
+          <!-- <div>
+            <el-pagination
+              background
+              layout="prev, pager, next"
+               @current-change="currentPageChange" :current-page.sync="currentPage"
+              :total="totalCount" :page-size="pageSize" @size-change="pageSizeChange">
+            </el-pagination>
+          </div> -->
+          <div class="carPager2">
+            <el-pagination
+              background
+              prev-tex
+              layout="prev, pager, next, sizes" :pager-count="5"  @current-change="currentPageChange" :current-page.sync="currentPage"
+              :total="totalCount" :page-size="pageSize" @size-change="pageSizeChange">
+            </el-pagination>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="infoWindow">
+      <div class="customInfoWindow">
+        <div class="customInfoWindow_title ">
+          <div id="infoWindowTitle"></div>
+          <div class="el-icon-close" onclick="closeInfoWindow()"></div>
+        </div>
+        <div class="body">
+          <p class="bar">车辆信息</p>
+          <div class="table">
+            <div class="row">
+              <div class="cellHeader">
+                车牌号
+              </div>
+              <div class="cell" id="infoWindowCarNo">
+              </div>
+              <div class="cellHeader">
+                司机
+              </div>
+              <div class="cell" id="infoWindowDriverName">
+              </div>
+            </div>
+            <div class="row">
+              <div class="cellHeader">
+                车型
+              </div>
+              <div class="cell" id="infoWindowCarType">
+              </div>
+              <div class="cellHeader">
+                联系电话
+              </div>
+              <div class="cell" id="infoWindowMobile">
+              </div>
+            </div>
+          </div>
+          <p class="bar" style="margin-top: 20px">订单信息</p>
+          <table class="table2">
+            <tr>
+              <td class="label">订单号</td>
+              <td colspan="3" id="infoWindowOrderSerial"></td>
+            </tr>
+            <tr>
+              <td class="label">用车时间</td>
+              <td colspan="3" id="infoWindowOrderTime"></td>
+            </tr>
+            <tr>
+              <td class="label">需求车型</td>
+              <td id="infoWindowOrderCarType"></td>
+              <td class="label">货物名称</td>
+              <td id="infoWindowOrderCargo"></td>
+            </tr>
+            <tr>
+              <td class="label">额外服务</td>
+              <td colspan="3" id="infoWindowOrderExtraServ"></td>
+            </tr>
+            <tr>
+              <td class="label">备注</td>
+              <td colspan="3" id="infoWindowOrderMemo"></td>
+            </tr>
+            <tr>
+              <td class="label">预估价格</td>
+              <td id="infoWindowOrderPrice"></td>
+              <td class="label">付款状态</td>
+              <td id="infoWindowOrderPayState"></td>
+            </tr>
+            <tr>
+              <td class="label">当前位置</td>
+              <td colspan="3" style="padding: 4px">
+                <div id="mapAddr"></div>
+                <div class="track">
+                  <div style="position: absolute;right: 0">
+                    <a href="javascript:showTrack2()">显示轨迹</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">提货地</td>
+              <td colspan="3" id="infoWindowOrderStartAddr"></td>
+            </tr>
+            <tr>
+              <td class="label">途经地</td>
+              <td colspan="3" id="infoWindowOrderPassAddr"></td>
+            </tr>
+            <tr>
+              <td class="label">目的地</td>
+              <td colspan="3" id="infoWindowOrderTargetAddr"></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+    import {postApi, getApi} from '@/api/common.js';
+//   import localStorage from '@/utils/localStorage';
+//   import VueJsCookie from 'vue-js-cookie';
+    import { getOrderCarTrailList } from '@/api/order/ordermange'
+
+    import { getOrderMonitorCount,getOrderMonitorList,querySysDictUrl } from '@/api/index.js'
+    import { orderDetailsList } from '@/api/order/ordermange.js'
+  export default {
+    name: "orderMonitor",
+    data() {
+      return {
+        showOrderSearchResult: true,
+        showOrderSearchResultIcon: "收起",
+        showOrderSearchResultStyle: "right: 415px",
+        filterText: null,
+        mp: null,
+        points: null,
+        markerOffset: new AMap.Pixel(-60, -93),
+        satelliteVisible: false,
+        satelliteLayer: null,
+        trafficVisible: false,
+        trafficLayer: null,
+        lostTime: 3600000,
+        carUrl: require("../../assets/orderMonitor/car.png"),
+        grayCarUrl: require("../../assets/orderMonitor/car_gray.png"),
+        redballUrl: require("../../assets/orderMonitor/redball.png"),
+        markerPoint: null,
+        markerIdx: null,
+        infoWindow2: null,
+        orderdetail: null,
+        geocoder: null,
+        polyline: null,
+        passedPolyline: null,
+        redball: null,
+        track: null,
+        truckDriving: null,
+        orderStatus: "全部服务中",
+        orderStatusCode: null,
+        orderNumAll: "",
+        orderNumJiedan: "",
+        orderNumGanwangtwd: "",
+        orderNumYidaotwd: "",
+        orderNumYizhuanghuo: "",
+        orderNumYunshuzhong: "",
+        orderNumYidaomdd: "",
+        orderNumYixiehuo: "",
+        orderNumGaipai: "",
+        totalCount: 0,
+        pageSize: 10,
+        currentPage: 1,
+        maxNum: 999,
+        carList: [],
+        trailsList:[],
+        processState: {displayAllMarkers: false},
+        // queryCountUrl: "/aflc-order/aflcMyOrderApi/getOrderMonitorCount",
+        // queryListUrl: "/aflc-order/aflcMyOrderApi/getOrderMonitorList",
+        // queryDetailUrl: "/aflc-order/aflcMyOrderApi/myOrderDetail?orderSerial=",
+        // querySysDictUrl: "/aflc-common/aflcCommonSysDistApi/findAflcCommonSysDictByCodes/"
+      }
+    },
+    mounted() {
+      var mp = this.mp = new AMap.Map("monitor_map", {
+        resizeEnable: true
+      });
+      var ctl = new AMap.Scale({
+        visible: true
+      });
+      mp.addControl(ctl);
+      ctl = new AMap.ToolBar({
+        visible: true
+      });
+      mp.addControl(ctl);
+      ctl = new AMap.OverView({
+        visible: true
+      });
+      mp.addControl(ctl);
+
+      this.geocoder = new AMap.Geocoder();
+      window.showTrack = this.showTrack;
+      window.showTrack2 = this.showTrack2;
+      window.checkTrack = this.checkTrack;
+      window.closeInfoWindow = this.closeInfoWindow;
+      window.translateAddr = this.translateAddr;
+      window.translateCode = this.translateCode;
+      window.getOrderDetail2 = this.getOrderDetail2;
+      this.redball = new AMap.Marker({
+        icon: this.redballUrl,
+        offset: new AMap.Pixel(-11, -26),
+        animation: "AMAP_ANIMATION_DROP",
+        autoRotation: false
+      });
+      this.redball.on('moving', (e) => {
+        this.passedPolyline.setPath(e.passedPath);
+      });
+      this.polyline = new AMap.Polyline({
+        map: mp,
+        // path: pois,
+        // strokeColor: "#00FF00",  //线颜色
+        // strokeOpacity: 1,     //线透明度
+        strokeWeight: 1,      //线宽  7
+        // strokeStyle: "solid"  //线样式
+        showDir: true
+      });
+      this.passedPolyline = new AMap.Polyline({
+        map: mp,
+        // path: lineArr,
+        // strokeColor: "#F00",  //线颜色
+        // strokeOpacity: 1,     //线透明度
+        strokeWeight: 1,      //线宽   7
+        // strokeStyle: "solid"  //线样式
+        showDir: true
+      });
+      this.infoWindow2 = new AMap.InfoWindow({
+        offset: new AMap.Pixel(190, 400),
+        isCustom: true,
+        autoMove: true
+      });
+      var tempEle = document.getElementById("infoWindow");
+      this.infoWindow2.setContent(tempEle.innerHTML);
+      tempEle.innerHTML = "";
+
+    //   this.checkLogin();
+      this.getOrder(null, true);
+
+      // AMap.event.addListener(this.mp, "click", function (e) {
+      //   console.log(e.lnglat);
+      // });
+    },
+    methods: {
+        initMap(){
+
+        },
+        loadMap() {
+            if (window.AMap) {
+                return Promise.resolve('')
+            } else {
+                return new Promise((resolve, reject) => {
+                loadJs('https://webapi.amap.com/maps?v=1.4.10&key=f167f450303ea43b1c9ccc459156f867').then(() => {
+                    this.initMap()
+                }).catch(() => {
+                    reject()
+                })
+                })
+            }
+        },
+        init() {
+            return Promise.all([this.loadMap()]).then(() => {
+                this.initMap()
+            })
+        },
+      checkLogin() {
+        var v = this.$route.query.access_token;
+        if (v != null && v != "")
+          VueJsCookie.set('28kytoken', v);
+
+        v = this.$route.query.user_token;
+        if (v != null && v != "")
+          localStorage.set("28ky-userdata", {userToken: v});
+
+        v = localStorage.get("28ky-userdata");
+        if (v == null || v.userToken == null) {
+          // this.notLogin();
+          return false;
+        }
+
+        v = VueJsCookie.get('28kytoken');
+        if (v == null) {
+          // this.notLogin();
+          return false;
+        }
+
+        return true;
+      },
+      notLogin() {
+        this.$confirm('尚未登录或者登录信息已失效，请重新登录. ', '', {
+          confirmButtonText: '确定',
+          showCancelButton: false,
+          type: 'warning'
+        });
+      },
+      pageSizeChange(val) {
+        this.pageSize = val;
+        this.currentPage = 1;
+        this.clear();
+        this.getOrder(this.orderStatusCode, true, true);
+      },
+      currentPageChange(val) {
+        this.currentPage = val;
+        this.clear();
+        this.getOrder(this.orderStatusCode, true, true);
+      },
+      clear() {
+        this.markerIdx = null;
+        this.track = null;
+        this.orderdetail = null;
+        if (this.redball != null)
+          this.redball.setMap(null);
+        if (this.polyline != null)
+          this.polyline.setPath(null);
+        if (this.passedPolyline != null)
+          this.passedPolyline.setPath(null);
+
+        if (this.truckDriving != null)
+          this.truckDriving.clear();
+        if (!this.mp)
+          return;
+        this.mp.clearInfoWindow();
+        var points = this.points;
+        this.points = [];
+        if (points != null)
+          this.mp.remove(points);
+      },
+      clear2() {
+        this.markerIdx = null;
+        this.track = null;
+        this.orderdetail = null;
+        if (this.redball != null)
+          this.redball.setMap(null);
+        if (this.polyline != null)
+          this.polyline.setPath(null);
+        if (this.passedPolyline != null)
+          this.passedPolyline.setPath(null);
+
+        if (this.mp != null)
+          this.mp.clearInfoWindow();
+
+        if (this.truckDriving != null)
+          this.truckDriving.clear();
+      },
+      getOrder(orderStatus, updateFlag, searchFlag) {
+        // postApi(this.queryCountUrl, {}).then((res) => {
+            getOrderMonitorCount({}).then((res) => {
+          if (res === null || res.data === null)
+            return;
+          var v = res.data.af00806HZ;
+          if (v === null)
+            v = 0;
+          this.orderNumAll = v;
+
+          v = res.data.af0080601HZ;
+          if (v === null)
+            v = 0;
+          this.orderNumJiedan = v;
+
+          v = res.data.af0080602HZ;
+          if (v === null)
+            v = 0;
+          this.orderNumGanwangtwd = v;
+
+          v = res.data.af0080603HZ;
+          if (v === null)
+            v = 0;
+          this.orderNumYidaotwd = v;
+
+          v = res.data.af0080604HZ;
+          if (v === null)
+            v = 0;
+          this.orderNumYizhuanghuo = v;
+
+          v = res.data.af0080605HZ;
+          if (v === null)
+            v = 0;
+          this.orderNumYunshuzhong = v;
+
+          v = res.data.af0080606HZ;
+          if (v === null)
+            v = 0;
+          this.orderNumYidaomdd = v;
+
+          v = res.data.af0080607HZ;
+          if (v === null)
+            v = 0;
+          this.orderNumYixiehuo = v;
+
+          v = res.data.af0080608HZ;
+          if (v === null)
+            v = 0;
+          this.orderNumGaipai = v;
+        });
+
+        var vo = {};
+        if (orderStatus != null)
+          vo.orderStatus = orderStatus;
+        if (searchFlag) {
+          var t = this.filterText;
+          if (t != null)
+            vo.keywordQuery = t;
+        }
+        getOrderMonitorList({
+        // postApi(this.queryListUrl, {
+          currentPage: this.currentPage,
+          pageSize: this.pageSize,
+          vo: vo
+        }).then((res) => {
+          var c = "";
+          try {
+            c = res.data.totalCount;
+          } catch (e) {
+            this.logError();
+          }
+
+          if (c === "" || c == null || isNaN(c))
+            return;
+
+          if (updateFlag) {
+            this.totalCount = c;
+            var l = res.data.list;
+            if (l == null)
+              l = [];
+            this.carList = l;
+            this.displayMarkers();
+          }
+        });
+      },
+      getOrderDetail2() {
+        var marker = this.markerPoint;
+        if (marker == null)
+          return;
+        var idx = marker.getExtData();
+        if (idx == null)
+          return;
+        if (this.carList == null)
+          return;
+        var carInfo = this.carList[idx];
+        if (carInfo == null)
+          return;
+
+        var ele = document.getElementById("infoWindowTitle");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        ele = document.getElementById("infoWindowCarNo");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        ele = document.getElementById("infoWindowDriverName");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        ele = document.getElementById("infoWindowMobile");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        ele = document.getElementById("infoWindowOrderTime");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        ele = document.getElementById("infoWindowOrderSerial");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+        
+
+        ele = document.getElementById("infoWindowCarType");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        ele = document.getElementById("infoWindowOrderCarType");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        ele = document.getElementById("infoWindowOrderCargo");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        ele = document.getElementById("infoWindowOrderExtraServ");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        ele = document.getElementById("infoWindowOrderMemo");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        ele = document.getElementById("infoWindowOrderPrice");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        ele = document.getElementById("infoWindowOrderPayState");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        ele = document.getElementById("infoWindowOrderStartAddr");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        ele = document.getElementById("infoWindowOrderPassAddr");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        ele = document.getElementById("infoWindowOrderTargetAddr");
+        if (!ele) {
+          setTimeout("getOrderDetail2()", 100);
+          return;
+        }
+
+        // console.log('this.orderdetail',this.orderdetail)
+        var res = this.orderdetail;
+        if (res == null || res.data == null)
+          res = {data: {}};
+        var v = res.data.aflcDriverStatus.carNumber;
+        if (v == null)
+          v = "";
+        carInfo.carNumber = v;
+        document.getElementById("infoWindowCarNo").innerText = v;
+
+        v = res.data.aflcDriverStatus.driverName;
+        if (v == null)
+          v = "";
+        carInfo.driverName = v;
+        document.getElementById("infoWindowDriverName").innerText = v;
+
+        v = res.data.aflcDriverStatus.driverMobile;
+        if (v == null)
+          v = "";
+        carInfo.driverMobile = v;
+        document.getElementById("infoWindowMobile").innerText = v;
+
+        v = res.data.orderSerial;
+        if (v == null)
+          v = "";
+        document.getElementById("infoWindowOrderSerial").innerText = v;
+
+
+        v = res.data.aflcDriverStatus.useCarTime;
+        if (v)
+          v = this.formatDate(v);
+        if (v == null)
+          v = "";
+        document.getElementById("infoWindowOrderTime").innerText = v;
+
+        // v = res.data.aflcDriverStatus.carTypeName;
+        v = res.data.aflcDriverStatus.carType;
+
+        if (v == null)
+          v = "";
+        document.getElementById("infoWindowCarType").innerText = v;
+        document.getElementById("infoWindowOrderCarType").innerText = v;
+
+        v = res.data.goodsName;
+        if (v == null)
+          v = "";
+        document.getElementById("infoWindowOrderCargo").innerText = v;
+
+        v = res.data.extraName;
+        if (v == null)
+          v = "";
+        document.getElementById("infoWindowOrderExtraServ").innerText = v;
+
+        // v = res.data.sendWord;
+        v = res.data.remark;
+        if (v == null)
+          v = "";
+        document.getElementById("infoWindowOrderMemo").innerText = v;
+
+        // v = res.data.orderPrice;
+        v = res.data.totalAmount;
+        if (v == null)
+          v = "";
+        else if (v != "" && !isNaN(v)) {
+          v = "￥" + v.toFixed(2);
+        }
+        document.getElementById("infoWindowOrderPrice").innerText = v;
+
+        v = res.data.payStatus;
+        // if (v != null)
+        //   v = this.statusCode2Text(v);
+        // if (v == null)
+        //   v = res.data.payStatus;
+        // if (v == null)
+        //   v = "";
+        document.getElementById("infoWindowOrderPayState").innerText = v;
+
+        document.getElementById("infoWindowOrderStartAddr").innerText = "";
+        document.getElementById("infoWindowOrderPassAddr").innerText = "";
+        document.getElementById("infoWindowOrderTargetAddr").innerText = "";
+        v = res.data.aflcOrderAddresses.sort(function(a, b){
+                return a.viaOrder - b.viaOrder
+            });
+
+        if (v == null || v.length < 1)
+          ;
+        else {
+          var addr = v[0];
+          if (addr != null)
+            addr = addr.viaAddressName;
+          if (addr == null)
+            addr = "";
+          document.getElementById("infoWindowOrderStartAddr").innerText = addr;
+
+          if (v.length > 2) {
+            var i = 1;
+            var str = null;
+            for (; i < (v.length - 1); ++i) {
+              addr = v[i];
+              if (addr == null)
+                continue;
+              addr = addr.viaAddressName;
+              if (addr == null)
+                continue;
+              if (str == null)
+                str = addr;
+              else
+                str = str + ">>" + addr;
+            }
+            if (str != null)
+              document.getElementById("infoWindowOrderPassAddr").innerHTML = str;
+            else
+              document.getElementById("infoWindowOrderPassAddr").innerHTML = '暂无';
+
+          }
+
+          if (v.length > 1) {
+            addr = v[v.length - 1];
+            if (addr != null)
+              addr = addr.viaAddressName;
+            if (addr == null)
+              addr = "";
+            document.getElementById("infoWindowOrderTargetAddr").innerText = addr;
+          }
+        }
+        var status = res.data.orderStatus;
+        // console.log('status',status)
+        if (status != null) {
+          if (status != carInfo.status) {
+            carInfo.status = status;
+            carInfo.statusText = null;
+            // var text = this.statusCode2Text(status);
+            var text = status;
+            if (text != null) {
+              carInfo.statusText = text;
+            } else
+              text = this.orderStatus;
+            text = this.subString(text, 16);
+            document.getElementById("infoWindowTitle").innerText = text;
+          }
+        }
+
+        var l = this.carList;
+        this.carList = [];
+        this.carList = l;
+      },
+      getOrderDetail(orderId, marker) {
+        try {
+          if (orderId == null || !marker)
+            return;
+          var idx = marker.getExtData();
+          if (idx == null)
+            return;
+          var carInfo = this.carList[idx];
+          if (carInfo == null)
+            return;
+            var page = 1;
+            var pagesize = 10000;
+            var trailform = Object.assign({},{orderSerial:orderId});
+
+            Promise.all([orderDetailsList(orderId),getOrderCarTrailList(page,pagesize,trailform)]).then(resArr => {
+                // console.log('resArr',resArr)
+            // })
+
+        //   postApi(this.queryDetailUrl + orderId).then((res) => {
+        // orderDetailsList(orderId).then((res) => {
+            console.log('未获取到该订单的数据，请稍后再试',resArr)
+            var lnglat = null;
+            var trails = null;
+            try {
+              if (resArr[0].data == null) {
+                this.$message({
+                  message: "未获取到该订单的数据，请稍后再试. ",
+                  type: 'warning'
+                });
+                return;
+              }
+                trails = resArr[1].data.list;
+                this.trailsList = trails;
+                console.log('12312123',this)
+                //   var trail = null;
+                if (trails != null && trails.length > 0)
+                    trail = trails[0];
+                if (trail != null && trail.longitude != null && trail.latitude != null)
+                    lnglat = [trail.longitude, trail.latitude];
+
+                if (lnglat == null) {
+                    this.$message({
+                    message: "未获取到该订单的位置数据，请稍后再试. ",
+                    type: 'warning'
+                    });
+                    marker.setMap(null);
+                    marker.setPosition(null);
+                    var pixel = new AMap.Pixel(100, 200);
+                    lnglat = this.mp.containerToLngLat(pixel);
+                    this.infoWindow2.open(this.mp, lnglat);
+                } else {
+                    var carUrl = this.grayCarUrl;
+                    try {
+                    var time = trail.coordinateTime;
+                    var curTime = resArr[0].data.currentTime;
+                    if (time != null && curTime != null) {
+                        if ((curTime - time) < this.lostTime)
+                        carUrl = this.carUrl;
+                    }
+                    } catch (e) {
+                    }
+                    marker.setIcon(carUrl);
+                    marker.setPosition(lnglat);
+                    marker.setMap(this.mp);
+                    this.markerPoint = marker;
+                    this.infoWindow2.open(this.mp, lnglat);
+                }
+            } catch (e) {
+            }
+
+            this.orderdetail = resArr[0];
+            this.translateAddr();
+            this.getOrderDetail2();
+            this.translateCode();
+
+            if (trails != null && (trails.length) > 0) {
+              var pois = [];
+              for (var i = trails.length - 1; i >= 0; --i) {
+                if (trails[i] == null || trails[i].longitude == null || trails[i].latitude == null)
+                  continue;
+                pois.push({lnglat: [trails[i].longitude, trails[i].latitude]});
+              }
+              this.track = pois;
+            }
+          });
+        } catch (e) {
+        }
+      },
+      formatDate(milsec) {
+        try {
+          if (milsec == null)
+            return null;
+          var d = new Date();
+          d.setTime(milsec);
+          var m = d.getMonth() + 1;
+          if (m < 10)
+            m = "0" + m;
+          var str = d.getFullYear() + "-" + m;
+
+          m = d.getDate();
+          if (m < 10)
+            m = "0" + m;
+          str = str + "-" + m;
+
+          m = d.getHours();
+          if (m < 10)
+            m = "0" + m;
+          str = str + " " + m;
+
+          m = d.getMinutes();
+          if (m < 10)
+            m = "0" + m;
+          str = str + ":" + m;
+
+          m = d.getSeconds();
+          if (m < 10)
+            m = "0" + m;
+          str = str + ":" + m;
+
+          return str;
+        } catch (e) {
+        }
+        return null;
+      },
+      diffPosition(lngLat, pos) {
+        try {
+          if (lngLat && pos && pos.length === 2) {
+            if ((lngLat.getLng()) != pos[0])
+              return true;
+            if ((lngLat.getLat()) != pos[1])
+              return true;
+
+            return false;
+          }
+          if (!lngLat && !pos)
+            return false;
+        } catch (e) {
+        }
+        return true;
+      },
+      logError() {
+        this.$message.error("无法获取服务器端数据. ");
+      },
+      clickOrder2(idx) {
+        try {
+          this.markerIdx = idx;
+          var marker = this.points[idx];
+          if (!marker)
+            return;
+          var evt = {"target": marker};
+          this.markerClick(evt);
+          this.markerPoint = marker;
+          this.centerMark();
+        } catch (e) {
+        }
+      },
+      clickOrder(ordStatus, searchFlag) {
+        if (!this.showOrderSearchResult) {
+          this.showOrderSearchResult = true;
+          this.showOrderSearchResultIcon = "收起";
+          this.showOrderSearchResultStyle = "right:415px";
+        }
+        if (ordStatus != null)
+          this.orderStatus = ordStatus;
+        this.currentPage = 1;
+        this.clear();
+        if (ordStatus == null || ordStatus === "全部服务中")
+          this.orderStatusCode = null;
+        else if (ordStatus === "司机已接单")
+          this.orderStatusCode = "AF0080601HZ";
+        else if (ordStatus === "司机赶往提货地")
+          this.orderStatusCode = "AF0080602HZ";
+        else if (ordStatus === "司机已到提货地")
+          this.orderStatusCode = "AF0080603HZ";
+        else if (ordStatus === "司机已装货")
+          this.orderStatusCode = "AF0080604HZ";
+        else if (ordStatus === "运输中")
+          this.orderStatusCode = "AF0080605HZ";
+        else if (ordStatus === "司机已到目的地")
+          this.orderStatusCode = "AF0080606HZ";
+        else if (ordStatus === "司机已卸货")
+          this.orderStatusCode = "AF0080607HZ";
+        else if (ordStatus === "司机改派")
+          this.orderStatusCode = "AF0080608HZ";
+        this.getOrder(this.orderStatusCode, true, searchFlag);
+      },
+      subString(str, maxLength) {
+        if (str == null)
+          return str;
+        if (str.length <= maxLength)
+          return str;
+        return (str.substr(0, maxLength) + "...");
+      },
+      closeInfoWindow() {
+        this.infoWindow2.close();
+      },
+      clickOrderSearchResult() {
+        if (this.showOrderSearchResultIcon === "收起") {
+          this.showOrderSearchResult = false;
+          this.showOrderSearchResultIcon = "展开";
+          this.showOrderSearchResultStyle = "right:-12px";
+        } else {
+          this.showOrderSearchResult = true;
+          this.showOrderSearchResultIcon = "收起";
+          this.showOrderSearchResultStyle = "right:415px";
+        }
+      },
+      displayAllMarkers() {
+        this.processState.displayAllMarkers = true;
+        if (this.redball != null)
+          this.redball.setMap(null);
+        if (this.polyline != null)
+          this.polyline.setPath(null);
+        if (this.passedPolyline != null)
+          this.passedPolyline.setPath(null);
+        if (this.mp == null) {
+          this.processState.displayAllMarkers = false;
+          return;
+        }
+        if (this.points) {
+          var points = this.points;
+          var showPoints = [];
+          var i = 0;
+          for (; i < points.length; ++i) {
+            if (points[i] == null || (points[i].getPosition()) == null || (points[i].getMap()) == null)
+              continue;
+            showPoints.push(points[i]);
+          }
+          if (showPoints.length > 0)
+            this.mp.setFitView(showPoints);
+        }
+        this.processState.displayAllMarkers = false;
+      },
+      displaySatellite() {
+        if (this.mp == null)
+          return;
+        if (this.satelliteLayer == null)
+          this.satelliteLayer = new AMap.TileLayer.Satellite({map: this.mp});
+        if (this.satelliteVisible)
+          this.satelliteLayer.show();
+        else
+          this.satelliteLayer.hide();
+      },
+      displayTraffic() {
+        if (this.mp == null)
+          return;
+        if (this.trafficLayer == null)
+          this.trafficLayer = new AMap.TileLayer.Traffic({map: this.mp, autoRefresh: true});
+        if (this.trafficVisible)
+          this.trafficLayer.show();
+        else
+          this.trafficLayer.hide();
+      },
+      displayMarkers() {
+        var l = this.carList;
+        if (l == null)
+          return;
+        var i = 0;
+        var pos = null;
+        var marker = null;
+        this.points = [];
+        var showPoints = [];
+        var time = null;
+        var curTime = null;
+        var carUrl = null;
+        for (; i < l.length; ++i) {
+          pos = l[i].aflcOrderCarTrail;
+          if (pos != null && pos.latitude != null && pos.longitude != null)
+            pos = [pos.longitude, pos.latitude];
+          else
+            pos = null;
+          if (pos == null) {
+            marker = new AMap.Marker({
+              icon: this.carUrl,
+              offset: this.markerOffset,
+              extData: i
+            });
+          } else {
+            carUrl = this.grayCarUrl;
+            try {
+              time = l[i].aflcOrderCarTrail.coordinateTime;
+              curTime = l[i].currentTime;
+              if (time != null && curTime != null) {
+                //(new Date()).getTime()
+                if ((curTime - time) < this.lostTime)
+                  carUrl = this.carUrl;
+              }
+            } catch (e) {
+            }
+            marker = new AMap.Marker({
+              icon: carUrl,
+              position: pos,
+              offset: this.markerOffset,
+              extData: i,
+              map: this.mp
+            });
+            showPoints.push(marker);
+          }
+          marker.on("click", this.markerClick);
+          this.points.push(marker);
+        }
+        if (this.mp == null)
+          return;
+        if (showPoints.length > 0)
+          this.mp.setFitView(showPoints);
+      },
+      centerMark() {
+        if (this.markerPoint != null) {
+          var pos = this.markerPoint.getPosition();
+          if (pos != null)
+            this.mp.panTo(pos);
+        }
+      },
+      statusCode2Text(code) {
+        if (code === "AF0080601HZ")
+          return "司机已接单";
+        if (code === "AF0080602HZ")
+          return "司机赶往提货地";
+        if (code === "AF0080603HZ")
+          return "司机已到提货地";
+        if (code === "AF0080604HZ")
+          return "司机已装货";
+        if (code === "AF0080605HZ")
+          return "运输中";
+        if (code === "AF0080606HZ")
+          return "司机已到目的地";
+        if (code === "AF0080607HZ")
+          return "司机已卸货";
+        if (code === "AF0080608HZ")
+          return "司机改派";
+        if (code === "AF00801")
+          return "待付款";
+        if (code === "AF00802")
+          return "已付款";
+        if (code === "AF00803")
+          return "已退款";
+        if (code === "AF00804")
+          return "派单中";
+        if (code === "AF00805")
+          return "待指派";
+        if (code === "AF00807")
+          return "已完成";
+        if (code === "AF00808")
+          return "已取消";
+
+        return null;
+      },
+      markerClick(e) {
+        this.clear2();
+        var markerPoint = this.markerPoint = e.target;
+        var idx = markerPoint.getExtData();
+        if (idx == null)
+          return;
+        this.markerIdx = idx;
+        var carInfo = null;
+        if (idx >= 0 && idx < this.carList.length)
+          carInfo = this.carList[idx];
+        if (carInfo == null)
+          return;
+
+        var ele = document.getElementById("infoWindowTitle");
+        if (ele) {
+          ele.innerText = "";
+        }
+
+        ele = document.getElementById("infoWindowCarNo");
+        var v = null;
+        if (ele) {
+          v = carInfo.carNumber;
+          if (v == null)
+            v = "";
+          ele.innerText = v;
+        }
+
+        ele = document.getElementById("infoWindowDriverName");
+        if (ele) {
+          v = carInfo.driverName;
+          if (v == null)
+            v = "";
+          ele.innerText = v;
+        }
+
+        ele = document.getElementById("infoWindowCarType");
+        if (ele) {
+          v = carInfo.carType;
+          if (v == null)
+            v = "";
+          ele.innerText = v;
+        }
+
+        ele = document.getElementById("infoWindowMobile");
+        if (ele) {
+          v = carInfo.mobile;
+          if (v == null)
+            v = "";
+          ele.innerText = v;
+        }
+
+        ele = document.getElementById("infoWindowOrderSerial");
+        if (ele) {
+          ele.innerText = "";
+        }
+
+        ele = document.getElementById("infoWindowOrderTime");
+        if (ele) {
+          ele.innerText = "";
+        }
+
+        ele = document.getElementById("infoWindowOrderCarType");
+        if (ele) {
+          ele.innerText = "";
+        }
+
+        ele = document.getElementById("infoWindowOrderCargo");
+        if (ele) {
+          ele.innerText = "";
+        }
+
+        ele = document.getElementById("infoWindowOrderExtraServ");
+        if (ele) {
+          ele.innerText = "";
+        }
+
+        ele = document.getElementById("infoWindowOrderMemo");
+        if (ele) {
+          ele.innerText = "";
+        }
+
+        ele = document.getElementById("infoWindowOrderPrice");
+        if (ele) {
+          ele.innerText = "";
+        }
+
+        ele = document.getElementById("infoWindowOrderPayState");
+        if (ele) {
+          ele.innerText = "";
+        }
+
+        ele = document.getElementById("mapAddr");
+        if (ele) {
+          ele.innerText = "";
+        }
+
+        ele = document.getElementById("infoWindowOrderStartAddr");
+        if (ele) {
+          ele.innerText = "";
+        }
+
+        ele = document.getElementById("infoWindowOrderPassAddr");
+        if (ele) {
+          ele.innerText = "";
+        }
+
+        ele = document.getElementById("infoWindowOrderTargetAddr");
+        if (ele) {
+          ele.innerText = "";
+        }
+
+        var pos = markerPoint.getPosition();
+        if (pos) {
+          this.infoWindow2.open(this.mp, pos);
+        }
+
+        this.getOrderDetail(carInfo.orderSerial, markerPoint);
+      },
+      translateCode() {
+        // if (this.orderdetail == null || this.orderdetail.data == null)
+        //   return;
+
+        // var ele = document.getElementById("infoWindowTitle");
+        // if (ele == null) {
+        //   setTimeout("translateCode()", 1000);
+        //   return;
+        // }
+
+        // ele = document.getElementById("infoWindowOrderPayState");
+        // if (ele == null) {
+        //   setTimeout("translateCode()", 1000);
+        //   return;
+        // }
+
+        // try {
+        //   var q = null;
+        //   if (this.orderdetail.data.orderStatus != null)
+        //     q = this.orderdetail.data.orderStatus;
+        //   if (this.orderdetail.data.payStatus != null) {
+        //     if (q == null)
+        //       q = this.orderdetail.data.payStatus;
+        //     else
+        //       q = q + "," + this.orderdetail.data.payStatus;
+        //   }
+        //   if (q == null)
+        //     return;
+        //   getApi(this.querySysDictUrl + q).then((res) => {
+            // console.log('qqqqq',this.orderdetail.data)
+            // querySysDictUrl(q).then((res) => {
+            // if (res == null || res.data == null) {
+            //   this.$message({
+            //     message: "获取订单状态数据出错. ",
+            //     type: 'warning'
+            //   });
+            //   return;
+            // }
+
+            var s = this.orderdetail.data.orderStatus ? this.orderdetail.data.orderStatus : '';
+            // if (s != null) {
+            //   s = res.data[s];
+            //   if (s == null)
+            //     s = "";
+            //   else
+            //     s = s.name;
+            //   if (s == null)
+            //     s = "";
+              document.getElementById("infoWindowTitle").innerText = s;
+            // }
+
+            s = this.orderdetail.data.payStatus ? this.orderdetail.data.payStatus :'';
+            // if (s != null) {
+            //   s = res.data[s];
+            //   if (s == null)
+            //     s = "";
+            //   else
+            //     s = s.name;
+            //   if (s == null)
+            //     s = "";
+              document.getElementById("infoWindowOrderPayState").innerText = s;
+            // }
+        //   });
+        // } catch (e) {
+        // }
+      },
+      translateAddr() {
+        var mapAddr = document.getElementById("mapAddr");
+        if (mapAddr != null)
+          mapAddr.innerText = "";
+        else {
+          setTimeout("translateAddr()", 1000);
+          return;
+        }
+        var markerPoint = this.markerPoint;
+        if (markerPoint == null)
+          return;
+        var pos = markerPoint.getPosition();
+        if (pos == null) {
+          mapAddr.innerHTML = "<div style='color: red'>未获取到位置数据. </div>";
+          return;
+        }
+        var t = this.orderdetail;
+        t.data.aflcOrderCarTrails = this.trailsList
+        var formatDate = this.formatDate;
+        this.geocoder.getAddress(pos, function (status, result) {
+          if (status === "complete" && result.regeocode) {
+            var address = result.regeocode.formattedAddress;
+            try {
+              if (t != null && t.data != null) {
+                t = t.data.aflcOrderCarTrails;
+                console.log('ttt',t)
+                if (t != null && t.length > 0) {
+                    // t = t[t.length - 1];
+                    t = t[0];
+                } else
+                    t = null;
+                if (t != null)
+                    t = t.coordinateTime;
+                if (t != null)
+                    t = formatDate(t);
+              } else
+                t = null;
+            } catch (e) {
+              t = null;
+            }
+            if (t != null)
+              address = address + "&nbsp;&nbsp;" + t;
+
+            mapAddr.innerHTML = address;
+            console.log('addressaddressaddress',address,t)
+          }
+        });
+      },
+      showTrack(orderId) {
+        var pois = this.track;
+        if (pois == null || pois.length < 2) {
+          this.$message({
+            message: '未获取到轨迹数据，请稍后再试. ',
+            type: 'warning'
+          });
+          return;
+        }
+        var d = AMap.GeometryUtil.distanceOfLine(pois);
+        var s = (d * 3.6) / 5;
+        var mp = this.mp;
+        mp.clearInfoWindow();
+        var polyline = this.polyline;
+        polyline.setPath(pois);
+        var redball = this.redball;
+        redball.setPosition(pois[0]);
+        redball.setMap(mp);
+        mp.setFitView([polyline, redball]);
+        redball.moveAlong(pois, s);
+        checkTrack();
+      },
+      showTrack2(orderId) {
+          console.log('truckDriving',this.truckDriving,this.track)
+        var truckDriving = this.truckDriving;
+        if (truckDriving == null) {
+          this.truckDriving = new AMap.TruckDriving({
+            map: this.mp,
+            size: 1,
+            showTraffic: true,
+            autoFitView: true
+          });
+          truckDriving = this.truckDriving;
+        }
+        truckDriving.clear();
+        var pois = this.track;
+        if (pois == null || pois.length < 2) {
+          this.$message({
+            message: '未获取到轨迹数据，请稍后再试. ',
+            type: 'warning'
+          });
+          return;
+        }
+        var d = AMap.GeometryUtil.distanceOfLine(pois);
+        var s = (d * 3.6) / 5;
+        var mp = this.mp;
+        mp.clearInfoWindow();
+        var polyline = this.polyline;
+        var redball = this.redball;
+        var parseRouteToPath = this.parseRouteToPath;
+        truckDriving.search(pois, function (status, result) {
+          if (status === 'complete') {
+            if (result.routes && result.routes.length) {
+              pois = parseRouteToPath(result.routes[0]);
+              var d = AMap.GeometryUtil.distanceOfLine(pois);
+              var s = (d * 3.6) / 5;
+              polyline.setPath(pois);
+              redball.setPosition(pois[0]);
+              redball.setMap(mp);
+              mp.setFitView([polyline, redball]);
+              redball.moveAlong(pois, s);
+              checkTrack();
+            }
+          } else {
+            this.$message({
+              message: '未获取到规划路线，请稍后再试. ',
+              type: 'warning'
+            });
+          }
+        });
+      },
+      parseRouteToPath(route) {
+        var path = [];
+        var step = null;
+        var j = 0, n = 0;
+        for (var i = 0, l = route.steps.length; i < l; i++) {
+          step = route.steps[i];
+          for (j = 0, n = step.path.length; j < n; j++) {
+            path.push(step.path[j])
+          }
+        }
+        return path;
+      },
+      checkTrack() {
+        var polyline = this.polyline;
+        var redball = this.redball;
+        if (polyline != null) {
+          var pois = polyline.getPath();
+          if (pois == null || pois.length < 2) {
+            redball.setMap(null);
+            return;
+          }
+          var pos2 = redball.getPosition();
+          if (pos2 == null) {
+            redball.setMap(null);
+            return;
+          }
+          var pos = pois[pois.length - 1];
+          if (pos2.equals(pos)) {
+            redball.setMap(null);
+            return;
+          }
+          setTimeout("checkTrack()", 100);
+        } else {
+          redball.setMap(null);
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  .orderSearchInput .el-input-group__append {
+    background-color: #67c23a;
+    border: 1px solid #67c23a;
+  }
+
+  .orderSearchInput .el-input-group__append .orderSearchButton {
+    background-color: #67c23a;
+    border-color: #67c23a;
+    color: #fff;
+  }
+
+  .orderSearchResult .el-badge__content {
+    top: -3px
+  }
+
+  .carPager .el-pager li,
+  .carPager .el-pagination button, .el-pagination span:not([class*=suffix]),
+  .carPager .el-input__inner,
+  .carPager .el-pagination__sizes .el-input .el-input__inner {
+    font-size: 12px
+  }
+
+  .carPager .el-pagination__jump {
+    margin-left: unset;
+  }
+
+  .btn3 .el-checkbox__inner {
+    border: 1px solid #409EFF;
+  }
+
+  .carNum {
+    color: blue;
+    text-align: center;
+    width: 120px;
+    height: 21px;
+    overflow: hidden;
+  }
+
+  .carIcon {
+    text-align: center;
+  }
+  
+  .carPager2>.el-pagination .btn-prev{
+      margin-left:0px
+  }
+  .carPager2>.el-pagination .el-pagination__sizes{
+      margin-right:0px;
+        float: right;
+  }
+  
+    .carPager2>.el-pagination .el-pager .number{
+        margin:0px;
+    }
+
+    .carPager2>.el-pagination.is-background .btn-next, .carPager2>.el-pagination.is-background .btn-prev, .carPager2>.el-pagination.is-background .el-pager li {
+        margin: 0;
+    }
+  .ctl2 .el-button:focus, .ctl2 .el-button:hover  {
+    color: #409EFF;
+    border-color: #409EFF;
+    background-color: unset;
+  }
+</style>
+
+<style scoped>
+  .customInfoWindow {
+    width: 328px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px 0 rgba(153, 153, 153, 0.5);
+  }
+
+  .customInfoWindow .customInfoWindow_title {
+    width: 329px;
+    height: 38px;
+    line-height: 38px;
+    vertical-align: middle;
+    text-align: center;
+    background-color: #2fb301;
+    color: white;
+  }
+
+  .customInfoWindow .el-icon-close {
+    position: absolute;
+    right: 7px;
+    top: 11px;
+    cursor: pointer;
+  }
+
+  .customInfoWindow .body {
+    width: 100%;
+    max-height: 580px;
+    overflow: auto;
+    padding: 10px 12px 16px 12px;
+  }
+
+  .customInfoWindow .body .bar {
+    font-size: 14px;
+    line-height:20px;
+    width: 100%;
+    background-color: white;
+    color: black;
+    text-align: left;
+  }
+
+  .customInfoWindow .table {
+    display: table;
+    font-size: 12px;
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .customInfoWindow .table2 {
+    font-size: 12px;
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .customInfoWindow .table2 td {
+    border: 1px solid #dbdbdb;
+    padding-left: 4px;
+    vertical-align: middle;
+    width: 88px;
+    word-break: break-all;
+  }
+
+  .customInfoWindow .table2 td.label {
+    background-color: #f2f2f2;
+    color: gray;
+    text-align: right;
+    padding-right: 4px;
+    width: 64px;
+    height: 32px;
+  }
+
+  .customInfoWindow .table .row {
+    display: table-row
+  }
+
+  .customInfoWindow .table .cell {
+    display: table-cell;
+    width: 88px;
+    border: 1px solid #dbdbdb;
+    text-align: left;
+    padding-left: 4px;
+    vertical-align: middle;
+    word-break: break-all;
+  }
+
+  .customInfoWindow .table .cellHeader {
+    display: table-cell;
+    border: 1px solid #dbdbdb;
+    text-align: right;
+    background-color: #f2f2f2;
+    color: gray;
+    width: 64px;
+    height: 32px;
+    padding-right: 4px;
+    vertical-align: middle;
+    word-break: break-all;
+  }
+
+  .customInfoWindow #mapAddr {
+    min-height: 35px;
+  }
+
+  .customInfoWindow .track {
+    position: relative;
+    height: 17px;
+  }
+
+  #infoWindow {
+    display: none;
+  }
+
+  .carPager {
+    position: absolute;
+    bottom: 12px;
+    font-size: 12px;
+    width:96%;
+  }
+
+  .carPager2,.carPager2 .el-pagination,.carPager2 .el-pagination .btn-prev{
+    padding-left: 0px;
+    margin-left:0px;
+  }
+
+    /* .el-pagination.is-background .el-pager li {
+        margin: 0;
+    } */
+  .allOrder {
+    float: none;
+    margin-bottom: 12px;
+  }
+
+  .el-badge {
+    cursor: pointer;
+  }
+
+  .orderSearchResult .table {
+    display: table;
+    font-size: 12px;
+    width: 100%;
+    padding: 12px;
+    vertical-align: middle;
+    border-collapse: collapse;
+  }
+
+  .orderSearchResult .table .row {
+    display: table-row
+  }
+
+  .rowclick {
+    cursor: pointer;
+  }
+
+  .rowFocus {
+    background-color: #f2f2f2;
+  }
+
+  .orderSearchResult .table .cell {
+    display: table-cell;
+    text-align: center;
+  }
+
+  .orderSearchResult .table .cellHeader,.orderSearchResult .table .cell4 {
+    display: table-cell;
+    border: 1px solid #dbdbdb;
+    text-align: center;
+    padding:8px 0;
+    font-size:12px;
+    line-height:17px;
+    color: #333333;
+  }
+
+  .orderSearchResult .table .cellHeader:first-child{
+      width:30px;
+  }
+
+  .orderSearchResult .table .cell2 {
+    display: table-cell;
+    border: 1px solid #dbdbdb;
+    text-align: center;
+    color: gray;
+    width: 89px;
+    max-width: 89px;
+    word-wrap: break-word;
+  }
+
+  .orderSearchResult .table .cell3 {
+    display: table-cell;
+    padding:6px 0;
+    line-height:18px;
+    text-align: center;
+    color:#1890ff;
+  }
+
+  .orderSearchResult .table .cell4 {
+    display: table-cell;
+    border: 1px solid #dbdbdb;
+    text-align: center;
+    color: gray;
+    width: 93px;
+    max-width: 93px;
+    word-wrap: break-word;
+  }
+
+  .orderSearchInput {
+    margin-top: 12px;
+  }
+
+  .orderSearch .orderSearch_title {
+    float: left;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: PingFang SC;
+    line-height:20px;
+    font-stretch: normal;
+    letter-spacing: 0;
+    color: #333333;
+  }
+
+  .orderSearchResult {
+    margin-top: 12px;
+    padding: 12px;
+    height: 580px;
+    background-color: white;
+    box-shadow: 0 2px 4px 0 rgba(153, 153, 153, 0.5);
+    transition:all 3s linear;
+  }
+
+  .orderSearch {
+    position: absolute;
+    right: 12px;
+    top: 20px;
+    width: 410px;
+  }
+
+  .orderSearch .showOrderSearchResult {
+    position: absolute;
+    right: 396px;
+    top: 210px;
+    background-color: #409EFF;
+    padding: 10px 2px;
+    font-size: 12px;
+    cursor: pointer;
+    width: 24px;
+    text-align: center;
+    padding:10px 5px;
+    font-weight:bold;
+    border-radius:5% 5%;
+    color: #fff;
+  }
+
+  .topLayer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+
+  #monitor_map {
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .ctl {
+    position: relative;
+    display: inline-block;
+    padding: 10px;
+    left: 60px;
+    top: 10px;
+  }
+
+  .ctl2 {
+    position: relative;
+    display: inline-block;
+    padding: 10px;
+    left: 40px;
+    top: 10px;
+  }
+
+  .btn2 {
+    margin-left: 10px;
+  }
+
+  .btn3 {
+    color: #409EFF;
+    border: 1px solid #409EFF !important;
+    padding: 9px 10px 5px 10px !important;
+  }
+
+  .btn4 {
+    background: unset;
+    border: 1px solid #409EFF;
+    color: #409EFF;
+  }
+</style>

@@ -1,0 +1,202 @@
+// @import "~element-ui/packages/theme-chalk/src/index";
+@import './element-ui.scss';
+@import './mixin.scss';
+@import './commonstyle.scss';
+@import './tab.scss';
+// @import './dialog.scss';
+
+body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+}
+
+html {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+}
+
+body{
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+:focus {
+  outline: none;
+}
+
+@media (max-width: 800px) {
+  body{
+    overflow-x: scroll;
+  }
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+a:focus,
+a:active {
+  outline: none;
+}
+
+a,
+a:focus,
+a:hover {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td, hr, button, article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section{
+  margin: 0;
+  padding: 0;
+}
+ul,
+ol,
+li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+table{
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+::-webkit-scrollbar {/*滚动条整体样式*/
+  width: 10px;     /*高宽分别对应横竖滚动条的尺寸*/
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+  border-radius: 6px;
+   box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+  background: #bbb;
+}
+::-webkit-scrollbar-thumb:hover{
+  background: rgb(68, 67, 67);
+}
+::-webkit-scrollbar-track {/*滚动条里面轨道*/
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+  border-radius: 6px;
+  background: #EDEDED;
+}
+
+input[type="number"]{-moz-appearance:textfield;}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button{
+    -webkit-appearance: none !important;
+    margin: 0; 
+}
+
+.clearfix {
+  &:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+}
+
+.fl{
+  float: left;
+}
+
+.fr{
+  float: right;
+}
+//vue router transition css
+.fade-enter-active,
+.fade-leave-active {
+  transition: all .2s ease
+}
+
+ 
+.el-table thead th, .el-table thead tr{
+  background-color: #eaf0ff;
+}
+.info_news .cell {
+  color: #333;
+  font-size: 14px;
+}
+    
+.fade-enter,
+.fade-leave-active {
+  opacity: 0;
+}
+
+//main-container全局样式
+#app{
+  height: 100%;
+  min-width: 800px;
+}
+.app-main{
+  height: 100%
+}
+
+.app-container {
+  padding: 20px;
+}
+
+.svg-icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+
+// 弹窗大图样式
+.showPictureWrapper{
+    width: auto;
+    min-width: 100px;
+    max-width: 80%;
+    max-height: 95%;
+    overflow: auto;
+    .el-message-box__content,.showPictureBox,.el-message-box__message,.el-message-box__message p{
+      max-height: 100%;
+    //   height: 100%;
+    }
+  
+    .showPictureBox{
+      img{
+        max-width: 100%;
+        max-height: 100%;
+      }
+    }
+  }
+
+  .ship-yi,.ship-sun,.ship-su,.ship-kong,.ship-ji,.ship-wei{
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    margin-right: 3px;
+    vertical-align: middle;
+  }
+  .ship-yi{
+    background: url("./assets/icom/orderStatus/yi.png") no-repeat;
+  }
+  .ship-sun{
+    background: url("./assets/icom/orderStatus/sun.png") no-repeat;
+  }
+  .ship-su{
+    background: url("./assets/icom/orderStatus/su.png") no-repeat;
+  }
+  .ship-wei{
+    background: url("./assets/icom/orderStatus/wei.png") no-repeat;
+  }
+  .ship-cao{
+    background: url("./assets/icom/orderStatus/cao.png") no-repeat;
+    
+  }
+
+  .pointer{
+    cursor: pointer;
+  }

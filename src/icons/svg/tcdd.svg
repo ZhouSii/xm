@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="17px" viewBox="0 0 18 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>tcdd</title>
+    <desc>Created with Sketch.</desc>
+    <defs><style type="text/css"></style></defs>
+    <g id="28快运侧栏导航图标" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-18.000000, -1087.000000)">
+        <g id="tcdd" transform="translate(18.000000, 1087.000000)" stroke="currentColor">
+            <rect id="Rectangle-9" x="6.5" y="0.5" width="11" height="16" rx="2"></rect>
+            <path d="M11.8998172,20.5 L13.5,9.32268697 L13.5,4.63636364 C13.5,4.01084171 12.9796983,3.5 12.3333333,3.5 L5.66666667,3.5 C5.02030175,3.5 4.5,4.01084171 4.5,4.63636364 L4.5,19.3636364 C4.5,19.9891583 5.02030175,20.5 5.66666667,20.5 L11.8998172,20.5 Z" id="Rectangle-9-Copy" transform="translate(9.000000, 12.000000) rotate(-90.000000) translate(-9.000000, -12.000000) "></path>
+            <path d="M8,5 L15,5" id="Line-6" stroke-linecap="round"></path>
+            <path d="M8,8 L15,8" id="Line-6-Copy" stroke-linecap="round"></path>
+            <path d="M8,12 L15,12" id="Line-6-Copy-2" stroke-linecap="round"></path>
+        </g>
+    </g>
+</svg>

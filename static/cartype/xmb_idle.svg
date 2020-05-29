@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="56px" height="68px" viewBox="0 0 56 68" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.2 (57519) - http://www.bohemiancoding.com/sketch -->
+    <title>xmb_ing</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-17.7%" y="-10.7%" width="135.4%" height="127.9%" filterUnits="objectBoundingBox" id="filter-1">
+            <feMorphology radius="1.5" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="2" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="图标" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="01企业货主网-02在途监控-copy" transform="translate(-328.000000, -162.000000)">
+            <g id="xmb_ing" filter="url(#filter-1)" transform="translate(332.000000, 164.000000)">
+                <path d="M24,60.1313892 C40,48.6454263 48,36.6016299 48,24 C48,10.745166 37.254834,0 24,0 C10.745166,0 6.47880858e-16,10.745166 0,24 C0,36.0452473 8,48.0890437 24,60.1313892 Z" id="Oval" fill="#14A1FF"></path>
+                <circle id="Oval-2" fill="#FFFFFF" cx="24" cy="23" r="20"></circle>
+                <g id="卡车" transform="translate(10.000000, 17.000000)" fill-rule="nonzero">
+                    <g id="Shape-+-Shape-Mask" fill="#14A1FF">
+                        <path d="M10,12 C10,9.790861 8.209139,8 6,8 C3.790861,8 2,9.790861 2,12 L1,12 C0.770302036,6.75004956 0.961983337,3.54607862 1.5750439,2.38808717 C2.49463475,0.65110001 3.36792452,6.48619524e-05 3.90341873,6.48619523e-05 C4.26041487,6.48619523e-05 10.3281406,4.32413015e-05 22.106596,0 L27,7.19685177 L27,11 C27,11.5522847 26.5522847,12 26,12 C26,9.790861 24.209139,8 22,8 C19.790861,8 18,9.790861 18,12 L10,12 Z" id="Combined-Shape"></path>
+                        <path d="M22.0744112,9 C23.7723792,9 25.1488503,10.3765269 25.1488503,12.0744671 C25.1488503,13.7723792 23.7723513,15.1488782 22.0744112,15.1488782 C20.3764711,15.1488782 19,13.7723513 19,12.0744671 C19,10.376499 20.3764711,9 22.0744112,9 Z M20.6539281,12.074495 C20.6539281,12.8589701 21.2899082,13.4948942 22.0744112,13.4948942 C22.8589142,13.4948942 23.4948383,12.8589421 23.4948383,12.074495 C23.4948383,11.2899641 22.8588862,10.6540399 22.0744112,10.6540399 C21.2898802,10.6540399 20.6539281,11.2899641 20.6539281,12.074495 Z" id="Shape"></path>
+                        <path d="M6.07443912,9 C7.77240719,9 9.1488503,10.3765269 9.1488503,12.0744671 C9.1488503,13.7723792 7.77237924,15.1488782 6.07443912,15.1488782 C4.376499,15.1488782 3,13.7723513 3,12.0744671 C3,10.376499 4.376499,9 6.07443912,9 Z M4.65392814,12.074495 C4.65392814,12.8589701 5.28988024,13.4948942 6.07438323,13.4948942 C6.85888623,13.4948942 7.49483832,12.8589421 7.49483832,12.074495 C7.49483832,11.2899641 6.85888623,10.6540399 6.07438323,10.6540399 C5.28988024,10.6540399 4.65392814,11.2899641 4.65392814,12.074495 Z" id="Shape"></path>
+                    </g>
+                    <polygon id="Mask" fill="#FFFFFF" points="17 2 21.7652816 2 23 5 17 5"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,173 @@
+@import "src/styles/variate.scss";
+@import "src/styles/variate.scss";
+$backgroundColor: #031523;
+$hoverBackgroundColor: #00070c;
+$sidebarBackgroundColor: #002039;
+
+.sidebar-menu{
+    color: rgba(255, 255, 255, 0.8);
+    &>.is-opened:hover{
+        background: $backgroundColor;
+        .is-active{
+            border: none;
+        }
+    }
+    &>.el-menu-item,&>.el-submenu{
+        background: $sidebarBackgroundColor;
+        border-left: 4px solid #002039;
+    }
+
+    .el-submenu__icon-arrow{
+        top: 55%;
+        right: 14px;
+    }
+
+    .sidebar-submenu{
+        display: none;
+    }
+    .is-opened{
+        height: auto;
+        background: #002039;
+        .el-menu {
+            border-right: 0;
+            background: $backgroundColor;
+        }
+    }
+
+    .sidebar-nav-title{
+        display: inline-block;
+    }
+    .is-active{
+        background: $hoverBackgroundColor !important;
+        border-left-color: #104193 !important;
+    }
+
+    &>.is-opened{
+        background: $backgroundColor;
+        border-left-color: #104193;
+        
+    }
+    .el-submenu {
+        &>.is-opened{
+            background: $backgroundColor;
+        }
+        .el-menu-item {
+            height: 50px;
+            line-height: 50px;
+            width: 100%;
+            font-size: 14px;
+            min-width: 100%;
+        }
+    }
+   
+    .el-submenu:hover,.el-submenu__title:hover,.el-menu-item:hover{
+            background: $hoverBackgroundColor;
+            border-left-color: #104193;
+    }
+
+    .svg-icon {
+        margin-right: 6px;
+        font-size: 1.2em;
+        color: #fff;
+        vertical-align: middle;
+    }
+  
+    }
+    /** 收缩边栏时的样式 **/
+    .hideSidebar{
+        .sidebar-menu{
+            position: relative;
+            z-index: 99;
+            .sidebar_menu_toggle{
+            text-align: center;
+            }
+            .menu-item{
+            padding-top: 5px;
+            padding-bottom: 25px;
+            height: auto;
+            font-size: 12px;
+            min-height: 40px;
+            margin-bottom: 0px;
+
+            &>.sidebar-nav-title{
+                line-height: 20px;
+                min-height: auto;
+            }
+            }
+            .is-opened{
+            &:hover{
+                background: $hoverBackgroundColor;
+            }
+            .sidebar-submenu{
+                display: none;
+            }
+            }
+            .menu-item:hover{
+                .sidebar-submenu{
+                    background: $sidebarBackgroundColor;
+                    display: none;
+                }
+            }
+            .svg-icon{
+                margin-left: -4px;
+            }
+            .sidebar-submenu{
+                display: none;
+            }
+            
+            .el-menu--popup{
+                background: $sidebarBackgroundColor;
+            }
+            .el-submenu__icon-arrow{
+                display: none;
+            }
+
+            a:hover{
+            color: #3e9ff1;
+            }
+            .el-submenu .el-menu-item {
+                padding: 0 !important;
+                .svg-icon{
+                    margin-left: 16px;
+                }
+            }
+            .menu-item>.el-menu>.menuitem>.sidebar-nav-title,.sidebar-nav-title,{
+                position: absolute;
+                left: 0;
+                width: 100%;
+                top: 20px;
+                text-align: center;
+                line-height: 22px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+            .el-menu-item, .sidebar-nav-title{
+                min-height: 44px;
+                height: auto;
+            }
+            .el-submenu{
+            min-width: auto;
+            }
+            
+        }
+        
+        .sidebar-submenu{
+            width: 130px;
+            background: $sidebarBackgroundColor;
+
+            .submenu-item{
+            line-height: 40px;
+            color: #fff;
+            font-size: 12px;
+
+            a{
+                display: block;
+                padding-left: 34px;
+            }
+            &.is-active, &:hover{
+                background: $hoverBackgroundColor;
+            }
+        }
+    }
+}

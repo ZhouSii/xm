@@ -1,0 +1,108 @@
+.detailsCompnent{
+    .detailsArrange{
+        .collapseInfo{
+            background: #ffffff;
+            margin-top: 18px;
+            padding: 0 20px;
+            h2{
+                border-bottom: solid 2px #e0e0e0;
+                line-height: 25px;
+                font-size: 18px;
+                padding: 36px 0 18px 0;
+                color: #333333;
+                font-weight: bold;
+                font-stretch: normal;
+            }
+            .essentialInformation{
+                padding:  20px 0;
+                .basicInfo{
+                    border-top: 1px solid #e6e6e6;
+                    border-left: 1px solid #e6e6e6;
+                    .el-col{
+                        font-size: 14px;
+                        line-height: 20px;
+                        height: 45px;
+                        padding: 12px 10px;
+                        border-right: 1px solid #e6e6e6;
+                        border-bottom: 1px solid #e6e6e6;
+                        &:nth-child(odd){
+                            background: #fafafa;
+                            text-align: right;
+                        }
+                        &:nth-child(even){
+                            text-align: left;
+                        }
+                    }
+                }
+            }
+            .essentialInformation_img{
+                // padding: 0 20px;
+                img{
+                    cursor: pointer;
+                    width: 100%;
+                    height: 300px;
+                }
+                h6{
+                    font-size:18px;
+                    width: 100%;
+                    text-align: center;
+                    color:#333;
+                    background: #eee;
+                    line-height:20px;
+                    padding: 10px 0px;
+                    font-weight:bold;
+                    .basicInfo_red{
+                        color: red
+                    }
+                }
+                &>.basicInfo_img{
+                    padding-bottom:40px;
+                }
+            }
+            .essentialInformation_table{
+                position:relative;
+                padding:20px 0; 
+                h6{
+                    font-size: 14px;
+                    line-height: 20px;
+                    color: #333;
+                    margin-bottom: 5px;
+                }
+                .el-table thead th, .el-table thead tr {
+                    background-color: #fafafa;
+                }
+                .el-pagination{
+                    text-align:right;
+                    padding-top:10px;
+                }
+            }
+            .classfyTitle{
+                overflow: hidden;
+                 li{
+                    float: left;
+                    font-size: 14px;
+                    line-height: 40px;
+                    color: #666;
+                    margin-right: 30px;
+                    cursor: pointer;
+                }
+                .currentClick{
+                    color: #1890ff;
+                }
+            }
+            .lengandInfo{
+                overflow: hidden;
+                padding: 10px 0;
+                li{
+                    float: left;
+                    color: #333;
+                    line-height:40px;
+                    margin-right: 47px;
+                    span{
+                        color: #1890ff;
+                    }
+                }
+            }
+        }
+    }
+}

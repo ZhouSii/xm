@@ -1,0 +1,236 @@
+.identicalStyle{
+    height: 100%;
+    padding: 10px;
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    .classify_searchinfo{
+        width:100%;
+        border-bottom: 1px dashed #999;
+        margin-bottom: 10px;
+        .el-form-item{
+            margin-right: 0px;
+            margin-bottom:  10px;
+            .el-form-item__label {
+                color: #333;
+                font-size: 14px;
+                line-height: 30px;
+                padding: 0;
+                margin: 0 10px;
+            }
+            .el-form-item__content{
+                vertical-align: top;
+                line-height: 30px;
+                height: 30px;
+                .el-input,.chooseCityList .el-cascader{
+                    width: 100%;
+                    .el-input__inner{
+                        color:#3e9ff1;
+                        width: 100%;
+                        height: 30px;
+                        line-height: 30px;
+                        padding-right: 30px;
+                    }
+                }
+                .el-input__icon{
+                    line-height: 30px;
+                }
+                .chooseCityList .el-cascader{
+                    line-height: 30px;
+                    .el-input__icon{
+                        line-height: 30px;
+                    }
+                }
+            }
+            .el-date-editor{
+                height: 30px;
+                line-height: 30px;
+                width: 217px;
+                .el-range-input{
+                    width:50%;
+                }
+                .el-range-separator{
+                    width: 10%;
+                    margin-top:-8px; 
+                    line-height: 26px;
+                }
+                .el-input__icon{
+                    margin-top:-8px; 
+                }
+            }
+        }
+    }
+    .classify_info{
+        flex: 1;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 40px;
+        .info_news{
+            flex: 1;
+            .el-table{
+              min-height: 390px;
+                .freezeName{
+                    color: #e6a23c;
+                    font-weight: bold;
+                }
+                .blackName{
+                    color: red;
+                    font-weight: bold;
+                }
+                .normalName{
+                    color: #0da0e4;
+                    font-weight: bold;
+                }
+                td{
+                    .cell{
+                        .el-radio .el-radio__label{
+                            padding-left: 0;
+                        }
+                        .moreInfo{
+                            cursor: pointer;
+                            color: #3e9ff1;
+                        }
+                        .vHtml{
+                            p{
+                                text-indent: 1em;
+                                text-align: left;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                            }
+                        }
+                    }
+                }
+            }
+            .cell{
+                .needMoreInfo{
+                    cursor:pointer;
+                    color:#3e9ff1;
+                    overflow:hidden; //超出的文本隐藏
+                    text-overflow:ellipsis; //溢出用省略号显示
+                    white-space:nowrap; //溢出不换行
+                }
+                .timeChoose{
+                    color: #ff6600;
+                    font-weight: 700;
+                }
+            }
+            .aflcOrderAddresses{
+                text-align: left;
+                text-indent: 0px;
+                span{
+                    display: inline-block;
+                    width: 80px;
+                    text-indent: 0;
+                    white-space: nowrap;
+                    text-align: right;
+                    color: #888;
+                }
+            }
+            
+        }
+    }
+    .info_tab_footer{
+        padding-left: 20px;
+        background: #eee;
+        height: 40px;
+        line-height: 40px;
+        box-shadow: 0 -2px 2px rgba(0,0,0,.1);
+        position: relative;
+        z-index: 10;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    .show_pager{
+        float: right;
+        line-height: 40px;
+        height: 40px;
+        overflow: hidden;
+    }
+
+    .v-dropdown-container{
+        top: 40px !important;
+        left: 0 !important;
+    }
+}
+
+.miniHeaderSearch {
+    .searchTable-header-wrapper{
+        display: flex !important;
+        flex-direction: column;
+        width: 100%;
+        margin: 0!important;
+        padding: 0!important;
+        margin-top: 5px;
+        position: relative;
+        clear: both;
+        .table-header-label{
+            line-height: 22px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: calc(100% - 18px);
+            margin-bottom: 5px;
+        }
+        .componentStyle{
+            border-top: 1px solid #d0d7e5;
+            width: 100%;
+            padding: 5px 5px 0;
+            line-height: 30px;
+            .table-header-input {
+                width: 100%;
+                line-height: 30px!important;
+                vertical-align: middle;
+                margin: 0!important;
+                padding: 0!important;
+                .el-input__inner {
+                    padding: 0 3px;
+                }
+            }
+        }
+        .el-date-editor.el-input, .el-date-editor.el-input__inner, .el-select, .el-select>.el-input {
+            width: 100%;
+            padding: 0;
+        }
+        .el-select>.el-input {
+            line-height: 30px;
+        }
+        .el-date-editor .el-input__inner, .el-select .el-input__inner {
+            padding: 0 3px 0 20px;
+            line-height: 15px;
+        }
+        .el-select,.el-date-editor {
+            margin-bottom: -9px;
+            line-height: 30px;
+            padding: 0px;
+            .el-input__inner {
+              padding: 0 3px 0 20px;
+              line-height: 15px;
+            }
+            .el-input__prefix {
+              left: 0px;
+            }
+          }
+        .el-select{
+            margin-bottom: -11px;
+        }
+    }
+    .el-table th .cell {
+        padding: 0;
+        position: relative;
+    }
+    .el-table .caret-wrapper{
+        position: absolute!important;
+        right: 0!important;
+        top:0;
+    }
+    .el-table th:hover {
+        background-color: #dae0ef;
+    }
+    
+    
+}

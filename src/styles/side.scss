@@ -1,0 +1,308 @@
+.TwoColumns {
+  height: 100%;
+  padding-bottom: 40px;
+}
+
+.columnsContainer {
+  display: flex;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  flex-flow: row;
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+/*左侧栏*/
+.side_left {
+  flex: 0 0 210px;
+  padding-top: 10px;
+  height: 100%;
+  overflow-x: hidden;
+  flex-direction: column;
+
+}
+
+.side_left .el-tree {
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.side_left .el-tree .el-tree-node {
+  width: 200px;
+  font-size: 14px;
+
+  .custom-tree-node .treeAct {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 138px;
+    display: block;
+    overflow: hidden;
+  }
+}
+
+.side_left .el-tree-node__content {
+  border-bottom: 1px solid #ddd;
+}
+
+.side_left .el-tree-node__children .el-tree-node .el-tree-node__content {
+  margin-left: 14px;
+  padding-left: 0 !important;
+  border-bottom: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+
+}
+
+.side_left .el-tree-node__children .el-tree-node .el-tree-node__content {
+  margin-left: 14px;
+  padding-left: 0 !important;
+  border-bottom: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+}
+
+.side_left .el-tree .is-focusable .el-tree-node__children .is-focusable {
+  margin-left: 13px;
+}
+
+side_left .el-tree-node__content:hover {
+  background: rgb(195, 232, 255);
+}
+
+/* 无效时显示的颜色 */
+.side_left .el-tree-node__content .treeClass {
+  /* background: rgb(195,232,255); */
+  color: #999 !important;
+  /*display: none !important;*/
+}
+
+/* 无效时显示的颜色 */
+.side_left .el-tree-node__content:hover {
+  background-color: rgb(195, 232, 255);
+}
+
+.side_left .el-tree-node__content:visited {
+  background-color: rgb(195, 232, 255);
+}
+
+.side_left .add-role-tree .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content {
+  background: lightpink;
+}
+
+/*右侧栏*/
+.side_right {
+  flex: 1;
+  // flex-wrap:wrap;
+  padding: 10px 10px 0px 10px !important;
+  height: 100%;
+  overflow-x: hidden;
+  display: flex;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.classify_searchinfo {
+  width: 100%;
+  border-bottom: 1px dashed #999;
+  margin-bottom: 10px;
+
+  .el-form-item {
+    margin-right: 5px;
+    margin-bottom: 10px;
+
+    .el-form-item__label {
+      color: #333;
+      font-size: 14px;
+      line-height: 30px;
+      padding: 0;
+      margin: 0 10px;
+    }
+
+    .el-form-item__content {
+      vertical-align: top;
+      line-height: 30px;
+      height: 30px;
+
+      .el-input {
+        width: 100%;
+
+        .el-input__inner {
+          color: #3e9ff1;
+          width: 100%;
+          height: 30px;
+          line-height: 30px;
+        }
+      }
+
+      .el-input__icon {
+        line-height: 30px;
+      }
+
+      .chooseCityList .el-cascader {
+        line-height: 30px;
+
+        .el-input__icon {
+          line-height: 30px;
+        }
+      }
+    }
+
+    .el-date-editor {
+      height: 30px;
+      line-height: 30px;
+      width: 230px;
+
+      .el-range-separator {
+        width: 10%;
+        margin-top: -8px;
+      }
+
+      .el-input__icon {
+        margin-top: -8px;
+      }
+    }
+  }
+}
+
+.btns_box {
+  height: 28px;
+  margin-bottom: 10px;
+
+  span.description {
+    line-height: 28px;
+    font-size: 14px;
+    margin-left: 20px;
+    color: #333;
+  }
+}
+
+.info_tab_footer {
+  padding-left: 20px;
+  background: #eee;
+  height: 40px;
+  line-height: 40px;
+  box-shadow: 0 -2px 2px rgba(0, 0, 0, .1);
+  position: relative;
+  z-index: 10;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.show_pager {
+  float: right;
+  line-height: 40px;
+  height: 40px;
+  overflow: hidden;
+}
+
+/*表格功能*/
+.TwoColumns .side_right_bottom {
+  flex: 1;
+  width: 100%;
+  flex-direction: column;
+  display: flex;
+}
+
+.TwoColumns .side_right_bottom .btns_box_lrl {
+  margin: 10px 0 10px 0;
+  height: 28px;
+}
+
+.org-name {
+  float: right;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  letter-spacing: 2px;
+  color: #333;
+  margin-top: 5px;
+  width: 12%;
+}
+
+.dele-peo {
+  width: 9.33333%;
+}
+
+/*分页*/
+
+
+.TwoColumns .info_news_footer {
+  padding-left: 20px;
+  background: #eee;
+  height: 40px;
+  line-height: 40px;
+  box-shadow: 0 -2px 2px rgba(0, 0, 0, .1);
+  z-index: 10;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.show_pager {
+  float: right;
+  line-height: 40px;
+  height: 40px;
+  overflow: hidden;
+}
+
+/*分页*/
+.btns_box_lrl img {
+  position: relative;
+  top: 1px;
+  left: 31px;
+  width: 13px;
+  height: 17px;
+}
+
+.btns_box_lrl .el-button--primary {
+  color: #3e9ff1;
+  background: #fff;
+  border-color: #3e9ff1;
+  /*padding: 8px 12px 8px 10px;*/
+  cursor: pointer;
+}
+
+.TwoColumns .el-table table {
+  width: 100% !important;
+
+}
+
+.TwoColumns .el-table th,
+td {
+  text-align: center;
+}
+
+/*表格功能*/
+
+/*表格内容*/
+.TwoColumns .info_news {
+  margin: 0 0px 0;
+  flex: 1;
+  overflow: auto;
+  width: 100%;
+}
+
+.TwoColumns .info_news .el-table__header {
+  background-color: #eee;
+}
+
+.TwoColumns .info_news .cell {
+
+  .el-radio .el-radio__label {
+    padding-left: 0;
+  }
+
+}
+
+/*表格内容*/
+
+
+/*其他**/
